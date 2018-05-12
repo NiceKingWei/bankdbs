@@ -1,20 +1,32 @@
 package dao
+
 // AUTO-GENERATED Slick data model
-/** Stand-alone Slick data model for immediate use */
-object Tables extends {
-  val profile = slick.jdbc.MySQLProfile
-} with Tables
+
+/** Entity class storing rows of table Subbranch
+  *  @param bankName Database column bank_name SqlType(CHAR), PrimaryKey, Length(64,false)
+  *  @param city Database column city SqlType(CHAR), Length(255,false)
+  *  @param money Database column money SqlType(DOUBLE) */
+case class SubbranchRow(bankName: String, city: String, money: Double)
+
 
 /** Slick data model trait for extension, choice of backend or usage in the cake pattern. (Make sure to initialize this late.) */
 trait Tables {
-  val profile: slick.jdbc.JdbcProfile
+  /**
+    * Json support
+    */
+  import play.api.libs.json.{JsValue, Json, Writes}
+  implicit class ToJson[A](x:A)(implicit wft:Writes[A]) {
+    val toJson: JsValue = Json.toJson(x)
+  }
+
+  val profile = slick.jdbc.MySQLProfile
   import profile.api._
   import slick.model.ForeignKeyAction
   // NOTE: GetResult mappers for plain SQL are only generated for tables where Slick knows how to map the types of all columns.
   import slick.jdbc.{GetResult => GR}
 
   /** DDL for all tables. Call .create to execute. */
-  lazy val schema: profile.SchemaDescription = Array(Account.schema, CheckingAccount.schema, Customer.schema, CustomerLoan.schema, Department.schema, HasAccount.schema, Loan.schema, LoanPay.schema, SavingAccount.schema, Staff.schema, Subbank.schema).reduceLeft(_ ++ _)
+  lazy val schema: profile.SchemaDescription = Array(Account.schema, CheckingAccount.schema, Customer.schema, CustomerLoan.schema, Department.schema, HasAccount.schema, Loan.schema, LoanPay.schema, SavingAccount.schema, Staff.schema, Subbranch.schema).reduceLeft(_ ++ _)
   @deprecated("Use .schema instead of .ddl", "3.0")
   def ddl = schema
 
@@ -44,8 +56,8 @@ trait Tables {
     /** Database column date SqlType(DATE) */
     val date: Rep[java.sql.Date] = column[java.sql.Date]("date")
 
-    /** Foreign key referencing Subbank (database name FK_subbank_account_relationship) */
-    lazy val subbankFk = foreignKey("FK_subbank_account_relationship", bankName, Subbank)(r => r.bankName, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
+    /** Foreign key referencing Subbranch (database name FK_subbranch_account_relationship) */
+    lazy val subbranchFk = foreignKey("FK_subbranch_account_relationship", bankName, Subbranch)(r => r.bankName, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
   }
   /** Collection-like TableQuery object for table Account */
   lazy val Account = new TableQuery(tag => new Account(tag))
@@ -194,8 +206,8 @@ trait Tables {
 
     /** Foreign key referencing Staff (database name FK_manager_relationship) */
     lazy val staffFk = foreignKey("FK_manager_relationship", staffIdCard, Staff)(r => r.staffIdCard, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
-    /** Foreign key referencing Subbank (database name FK_bank_dept) */
-    lazy val subbankFk = foreignKey("FK_bank_dept", bankName, Subbank)(r => r.bankName, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
+    /** Foreign key referencing Subbranch (database name FK_bank_dept) */
+    lazy val subbranchFk = foreignKey("FK_bank_dept", bankName, Subbranch)(r => r.bankName, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
   }
   /** Collection-like TableQuery object for table Department */
   lazy val Department = new TableQuery(tag => new Department(tag))
@@ -260,8 +272,8 @@ trait Tables {
     /** Database column amount SqlType(DOUBLE) */
     val amount: Rep[Double] = column[Double]("amount")
 
-    /** Foreign key referencing Subbank (database name FK_bank_loan_relationship) */
-    lazy val subbankFk = foreignKey("FK_bank_loan_relationship", bankName, Subbank)(r => r.bankName, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
+    /** Foreign key referencing Subbranch (database name FK_bank_loan_relationship) */
+    lazy val subbranchFk = foreignKey("FK_bank_loan_relationship", bankName, Subbranch)(r => r.bankName, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
   }
   /** Collection-like TableQuery object for table Loan */
   lazy val Loan = new TableQuery(tag => new Loan(tag))
@@ -374,21 +386,17 @@ trait Tables {
   /** Collection-like TableQuery object for table Staff */
   lazy val Staff = new TableQuery(tag => new Staff(tag))
 
-  /** Entity class storing rows of table Subbank
-   *  @param bankName Database column bank_name SqlType(CHAR), PrimaryKey, Length(64,false)
-   *  @param city Database column city SqlType(CHAR), Length(255,false)
-   *  @param money Database column money SqlType(DOUBLE) */
-  case class SubbankRow(bankName: String, city: String, money: Double)
-  /** GetResult implicit for fetching SubbankRow objects using plain SQL queries */
-  implicit def GetResultSubbankRow(implicit e0: GR[String], e1: GR[Double]): GR[SubbankRow] = GR{
+
+  /** GetResult implicit for fetching SubbranchRow objects using plain SQL queries */
+  implicit def GetResultSubbranchRow(implicit e0: GR[String], e1: GR[Double]): GR[SubbranchRow] = GR{
     prs => import prs._
-    SubbankRow.tupled((<<[String], <<[String], <<[Double]))
+    SubbranchRow.tupled((<<[String], <<[String], <<[Double]))
   }
-  /** Table description of table subbank. Objects of this class serve as prototypes for rows in queries. */
-  class Subbank(_tableTag: Tag) extends profile.api.Table[SubbankRow](_tableTag, Some("bankdb"), "subbank") {
-    def * = (bankName, city, money) <> (SubbankRow.tupled, SubbankRow.unapply)
+  /** Table description of table subbranch. Objects of this class serve as prototypes for rows in queries. */
+  class Subbranch(_tableTag: Tag) extends profile.api.Table[SubbranchRow](_tableTag, Some("bankdb"), "subbranch") {
+    def * = (bankName, city, money) <> (SubbranchRow.tupled, SubbranchRow.unapply)
     /** Maps whole row to an option. Useful for outer joins. */
-    def ? = (Rep.Some(bankName), Rep.Some(city), Rep.Some(money)).shaped.<>({r=>import r._; _1.map(_=> SubbankRow.tupled((_1.get, _2.get, _3.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
+    def ? = (Rep.Some(bankName), Rep.Some(city), Rep.Some(money)).shaped.<>({r=>import r._; _1.map(_=> SubbranchRow.tupled((_1.get, _2.get, _3.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
 
     /** Database column bank_name SqlType(CHAR), PrimaryKey, Length(64,false) */
     val bankName: Rep[String] = column[String]("bank_name", O.PrimaryKey, O.Length(64,varying=false))
@@ -397,6 +405,6 @@ trait Tables {
     /** Database column money SqlType(DOUBLE) */
     val money: Rep[Double] = column[Double]("money")
   }
-  /** Collection-like TableQuery object for table Subbank */
-  lazy val Subbank = new TableQuery(tag => new Subbank(tag))
+  /** Collection-like TableQuery object for table Subbranch */
+  lazy val Subbranch = new TableQuery(tag => new Subbranch(tag))
 }
