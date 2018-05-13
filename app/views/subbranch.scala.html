@@ -12,14 +12,16 @@
   <link rel="stylesheet" href="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/css/bootstrap.min.css">
   <script src="http://cdn.static.runoob.com/libs/jquery/2.1.1/jquery.min.js"></script>
   <script src="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
 
   <link href="assets/stylesheets/bootstrap.min.css" rel="stylesheet">
   <script src="assets/javascripts/jquery.min.js"></script>
   <script src="assets/javascripts/bootstrap.min.js"></script>
+  <script src="assets/javascripts/vue.js"></script>
 </head>
 
 <body>
-  <div class="container">
+  <div class="container" id="app">
     <div class="col-sm-2"></div>
     <div class="container col-sm-8">
       <div class="panel-group" id="accordion">
@@ -34,27 +36,27 @@
               <div class="row">
                 <div class="form-group col-sm-6">
                   <label for="search_name">支行名称</label>
-                  <input type="text" id="search_name" class="form-control">
+                  <input type="text" id="search_name" class="form-control" v-bind:value="search_name">
                 </div>
                 <div class="form-group col-sm-6">
                   <label for="search_city">城市</label>
-                  <input type="text" id="search_city" class="form-control">
+                  <input type="text" id="search_city" class="form-control" v-bind:value="search_city">
                 </div>
               </div>
               <div class="row">
                 <div class="form-group col-sm-6">
                   <label for="search_min">资产最小值</label>
-                  <input type="text" class="form-control" id="search_min" placeholder="0.00">
+                  <input type="text" class="form-control" id="search_min" v-bind:value="search_min" placeholder="0.00">
                 </div>
 
                 <div class="form-group col-sm-6">
                   <label for="search_min">资产最大值</label>
-                  <input type="text" class="form-control" id="search_max" placeholder="inf">
+                  <input type="text" class="form-control" id="search_max" v-bind:value="search_max" placeholder="inf">
                 </div>
               </div>
               <div class="row">
                 <div class="form-group col-sm-6">
-                  <button type="submit" class="btn btn-info">搜索</button>
+                  <button type="submit" class="btn btn-info" v-on:click="do_serach">搜索</button>
                 </div>
               </div>
             </div>
@@ -71,17 +73,17 @@
               <div class="row">
                 <div class="form-group col-sm-6">
                   <label for="edit_name">支行名称</label>
-                  <input type="text" class="form-control" id="edit_name">
+                  <input type="text" class="form-control" id="edit_name" v-bind:value="choosed_item.bankName">
                 </div>
                 <div class="form-group col-sm-6">
                   <label for="edit_city">城市</label>
-                  <input type="text" class="form-control" id="edit_city">
+                  <input type="text" class="form-control" id="edit_city" v-bind:value="choosed_item.city">
                 </div>
               </div>
               <div class="row">
                 <div class="form-group col-sm-6">
                   <label for="edit_money">资产</label>
-                  <input type="money" class="form-control" id="edit_money">
+                  <input type="money" class="form-control" id="edit_money"  v-bind:value="choosed_item.money">
                 </div>
               </div>
               <div class="row">
@@ -103,38 +105,38 @@
             <th>资产</th>
           </tr>
         </thead>
-        <tbody>
-          <tr line="0">
-            <td>name</td>
-            <td>city</td>
-            <td>money</td>
-          </tr>
-          <tr line="1">
-            <td>name</td>
-            <td>city</td>
-            <td>money</td>
+        <tbody v-on:mouseout="row_over=-1">
+          <tr v-for="(row,index) of rows" v-on:mouseover="row_over=index" v-on:click="on_choose(index)" v-bind:class="{danger:index==row_choose,info:index==row_over}">
+            <td>{{row.bankName}}</td>
+            <td>{{row.city}}</td>
+            <td>{{row.money}}</td>
           </tr>
         </tbody>
       </table>
-      <nav aria-label="Page navigation">
-        <ul class="pagination">
-          <li>
-            <a href="#" aria-label="Previous" id="prev">
-              <span aria-hidden="true">&laquo;</span>
-            </a>
-          </li>
-          <li><a href="#">1</a></li>
-          <li><a href="#">2</a></li>
-          <li>
-            <a href="#" aria-label="Next" id="next">
-              <span aria-hidden="true">&raquo;</span>
-            </a>
-          </li>
-        </ul>
-      </nav>
+      <row>
+        <nav aria-label="Page navigation" class="col-sm-12">
+          <ul class="pagination">
+            <li>
+              <a href="#" id="pg_prev" v-on:click="change_page(-1)">
+                <span aria-hidden="true">&laquo;</span>
+              </a>
+            </li>
+            <li v-for="off in offs" v-if="in_range(page_cur+off)" v-bind:class="{active:off==0}">
+              <a href="#" v-on:click="change_page(off)">{{page_cur+off+1}}</a>
+            </li>
+            <li>
+              <a href="#" id="pg_next" v-on:click="change_page(1)">
+                <span aria-hidden="true">&raquo;</span>
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </row>
     </div>
+    <p id="debug">{{debug}}</p>
   </div>
-  <script src="assets/javascripts/table.js"></script>
+  <script src="assets/javascripts/subbranch.js"></script>
+  <script src="../../public/javascripts/subbranch.js"></script>
 </body>
 
 </html>
