@@ -12,29 +12,26 @@ import scala.concurrent.{ExecutionContext, Future}
 class SubbranchModel @Inject()(dbConfigProvider: DatabaseConfigProvider)(implicit ec: ExecutionContext) extends Tables {
   val dbConfig = dbConfigProvider.get[JdbcProfile]
 
-  case class SubbranchSearch(name:String,city:String,min:Double,max:Double)
-  implicit val SubbranchSearchReads: Reads[SubbranchSearch] = Json.reads[SubbranchSearch]
-
   import profile.api._
   import dbConfig._
 
-  def search(search:SubbranchSearch) : Future[Seq[SubbranchRow]] = db.run {
+  def search(name:String,city:String,min:Double,max:Double) : Future[Seq[SubbranchRow]] = db.run {
     Subbranch.filter { item =>
-      (item.bankName like (if(search.name.isEmpty) "%" else search.name)) &&
-      (item.city like (if(search.city.isEmpty) "%" else search.city)) &&
-      (item.money >= search.min && item.money <= (if(search.max==0) Double.MaxValue else search.max))
+      (item.bankName like (if(name.isEmpty) "%" else name)) &&
+      (item.city like (if(city.isEmpty) "%" else city)) &&
+      (item.money >= min && item.money <= (if(max==0) Double.MaxValue else max))
     }.result
   }
 
-  def insert(name:String,city:String,money:Double):Future[Int] = db.run {
-    Subbranch += SubbranchRow(name,city,money)
+  def insert(row:SubbranchRow):Future[Int] = db.run {
+    Subbranch += row
   }
 
-  def update(name:String,city:String,money:Double):Future[Int] = db.run {
-    Subbranch.filter(_.bankName===name).update(SubbranchRow(name,city,money))
+  def update(old_row:SubbranchRow,new_row:SubbranchRow):Future[Int] = db.run {
+    Subbranch.filter(_.bankName===old_row.bankName).update(new_row)
   }
 
-  def remove(name:String):Future[Int] = db.run {
+  def delete(name:String):Future[Int] = db.run {
     Subbranch.filter{_.bankName===name}.delete
   }
 

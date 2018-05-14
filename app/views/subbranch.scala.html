@@ -9,11 +9,6 @@
 
   <title>Subbranch</title>
 
-  <link rel="stylesheet" href="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/css/bootstrap.min.css">
-  <script src="http://cdn.static.runoob.com/libs/jquery/2.1.1/jquery.min.js"></script>
-  <script src="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-
   <link href="assets/stylesheets/bootstrap.min.css" rel="stylesheet">
   <script src="assets/javascripts/jquery.min.js"></script>
   <script src="assets/javascripts/bootstrap.min.js"></script>
@@ -73,23 +68,23 @@
               <div class="row">
                 <div class="form-group col-sm-6">
                   <label for="edit_name">支行名称</label>
-                  <input type="text" class="form-control" id="edit_name" v-bind:value="choosed_item.bankName">
+                  <input type="text" class="form-control" id="edit_name" v-model:value="choosed_item.bankName">
                 </div>
                 <div class="form-group col-sm-6">
                   <label for="edit_city">城市</label>
-                  <input type="text" class="form-control" id="edit_city" v-bind:value="choosed_item.city">
+                  <input type="text" class="form-control" id="edit_city" v-model:value="choosed_item.city">
                 </div>
               </div>
               <div class="row">
                 <div class="form-group col-sm-6">
                   <label for="edit_money">资产</label>
-                  <input type="money" class="form-control" id="edit_money"  v-bind:value="choosed_item.money">
+                  <input type="money" class="form-control" id="edit_money"  v-model:value="choosed_item.money">
                 </div>
               </div>
               <div class="row">
                 <div class="col-sm-6">
-                  <button type="submit" class="btn btn-success">增加</button>
-                  <button type="submit" class="btn btn-warning">修改</button>
+                  <button type="submit" class="btn btn-success" v-on:click="do_insert">增加</button>
+                  <button type="submit" class="btn btn-warning" v-on:click="do_update">修改</button>
                   <button type="submit" class="btn btn-danger">删除</button>
                 </div>
               </div>
@@ -135,8 +130,8 @@
     </div>
     <p id="debug">{{debug}}</p>
   </div>
+
   <script src="assets/javascripts/subbranch.js"></script>
-  <script src="../../public/javascripts/subbranch.js"></script>
 </body>
 
 </html>
