@@ -4,10 +4,27 @@
 # ~~~~
 
 GET     /                           controllers.HomeController.index
+
 GET     /subbranch                  controllers.SubbranchController.index
 GET     /api/subbranch              controllers.SubbranchController.get(pg:Int,name:String,city:String,min:Double,max:Double)
 POST    /api/subbranch              controllers.SubbranchController.insert
 PUT     /api/subbranch              controllers.SubbranchController.update
 DELETE  /api/subbranch              controllers.SubbranchController.delete
+
+GET     /api/staff                  controllers.StaffController.get(pg:Int,id:String,name:String,bankName:String,date_from:String,date_to:String)
+POST    /api/staff                  controllers.StaffController.insert
+PUT     /api/staff                  controllers.StaffController.update
+DELETE  /api/staff                  controllers.StaffController.delete
+
+GET     /api/account                controllers.AccountController.get(pg:Int,account_id:String,account_type:Int,bank_name:String,min_money:Double,max_money:Double,date_from:String,date_to:String)
+POST    /api/account                controllers.AccountController.insert
+PUT     /api/account                controllers.AccountController.update
+DELETE  /api/account                controllers.AccountController.delete
+
+GET     /api/customer               controllers.CustomerController.get(pg:Int,id_card:String,staff_id_card:String,name:String,contact_name:String)
+POST    /api/customer               controllers.CustomerController.insert
+PUT     /api/customer               controllers.CustomerController.update
+DELETE  /api/customer               controllers.CustomerController.delete
+
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

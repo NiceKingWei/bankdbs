@@ -9,7 +9,7 @@ import play.api.libs.json._
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class SubbranchModel @Inject()(dbConfigProvider: DatabaseConfigProvider)(implicit ec: ExecutionContext) extends Tables {
+class SubbranchModel @Inject()(dbConfigProvider: DatabaseConfigProvider)(implicit ec: ExecutionContext) extends DBTables {
   val dbConfig = dbConfigProvider.get[JdbcProfile]
 
   import profile.api._

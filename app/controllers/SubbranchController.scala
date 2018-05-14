@@ -1,5 +1,6 @@
 package controllers
 
+import myutils.MyUtils._
 import dao.SubbranchRow
 import javax.inject._
 import models.SubbranchModel
@@ -15,7 +16,6 @@ class SubbranchController @Inject()(subbranch: SubbranchModel, cc: ControllerCom
 
   import subbranch._
 
-  val page_items = 10
 
   def index() = Action { implicit request: Request[AnyContent] =>
     Ok(views.html.subbranch()).withHeaders("default-src" -> "unsafe-inline")
@@ -47,7 +47,7 @@ class SubbranchController @Inject()(subbranch: SubbranchModel, cc: ControllerCom
         case Failure(_) => Future(BadRequest("data error"))
       }
     }.getOrElse {
-      Future(BadRequest("update error"))
+      Future(BadRequest("request error"))
     }
   }
 
@@ -60,7 +60,7 @@ class SubbranchController @Inject()(subbranch: SubbranchModel, cc: ControllerCom
         case Failure(_) => Future(BadRequest("data error"))
       }
     }.getOrElse {
-      Future(BadRequest("delete error"))
+      Future(BadRequest("request error"))
     }
   }
 
