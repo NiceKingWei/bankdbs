@@ -17,8 +17,8 @@ class SubbranchModel @Inject()(dbConfigProvider: DatabaseConfigProvider)(implici
 
   def search(name:String,city:String,min:Double,max:Double) : Future[Seq[SubbranchRow]] = db.run {
     Subbranch.filter { item =>
-      (item.bankName like (if(name.isEmpty) "%" else name)) &&
-      (item.city like (if(city.isEmpty) "%" else city)) &&
+      (item.bankName like ("%"++name++"%")) &&
+      (item.city like ("%"++city++"%")) &&
       (item.money >= min && item.money <= (if(max==0) Double.MaxValue else max))
     }.result
   }

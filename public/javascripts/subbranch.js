@@ -29,8 +29,8 @@ var app = new Vue({
         'pg': new_cur,
         'name': this.search_name,
         'city': this.search_city,
-        'min': this.search_min,
-        'max': this.search_max
+        'min': parseFloat(this.search_min),
+        'max': parseFloat(this.search_max)
       };
       $.ajax({
         'url': "api/subbranch",
@@ -50,9 +50,9 @@ var app = new Vue({
     in_range: function (n) {
       return n >= 0 && n < this.page_count;
     },
-    do_serach: function () {
+    do_search: function () {
       this.page_cur = 0;
-      change_page(0);
+      this.change_page(0);
     },
     on_choose: function (index) {
       this.row_choose = index;
@@ -67,6 +67,7 @@ var app = new Vue({
     },
     do_insert:function(){
       var _self = this;
+      this.choosed_item.money = parseFloat(this.choosed_item.money);
       $.ajax({
         'url': "api/subbranch",
         'type': 'post',
@@ -83,6 +84,7 @@ var app = new Vue({
     },
     do_remove:function(){
       var _self = this;
+      this.choosed_item.money = parseFloat(this.choosed_item.money);
       $.ajax({
         'url': "api/subbranch",
         'type': 'delete',
@@ -98,6 +100,7 @@ var app = new Vue({
     },
     do_update:function(){
       var _self = this;
+      this.choosed_item.money = parseFloat(this.choosed_item.money);
       $.ajax({
         'url': "api/subbranch",
         'type': 'put',
