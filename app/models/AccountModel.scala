@@ -2,7 +2,7 @@ package models
 
 import java.sql.Date
 
-import dao.DBTables
+import dao.{DBTables, HasAccountRow}
 import javax.inject.{Inject, Singleton}
 import play.api.db.slick.DatabaseConfigProvider
 import play.api.libs.json.{Json, Reads, Writes}
@@ -70,13 +70,30 @@ class AccountModel @Inject()(dbConfigProvider: DatabaseConfigProvider)(implicit 
     }
   }
 
-  def insert(row: BaseAccountRow): Future[Int] = db.run {
-    if (row.is_saving) {
-      SavingAccount += row.toSaving
-    } else {
-      CheckingAccount += row.toChecking
+  def insert(id_card: String, row: BaseAccountRow): Future[Int] =
+    db.run {
+      Account.flatMap { account =>
+        HasAccount
+          .filter(_.accountId === account.accountId)
+          .map(x => (x.isSaving, account.bankName))
+      }.result
+    }.flatMap { accounts =>
+      db.run {
+        if (accounts.exists { account =>
+          val is_saving = account._1.getOrElse(false)
+          is_saving == row.is_saving && account._2 == row.bankName.getOrElse("")
+        }) {
+          throw new RuntimeException()
+        } else {
+          if (row.is_saving) {
+            SavingAccount += row.toSaving
+          } else {
+            CheckingAccount += row.toChecking
+          }
+          HasAccount += HasAccountRow(id_card,row.accountId,Some(new Date(new java.util.Date().getTime)),Some(row.is_saving))
+        }
+      }
     }
-  }
 
   def update(old_row: BaseAccountRow, new_row: BaseAccountRow): Future[Int] = db.run {
     if (old_row.is_saving != new_row.is_saving || old_row.accountId != new_row.accountId) {
@@ -97,6 +114,7 @@ class AccountModel @Inject()(dbConfigProvider: DatabaseConfigProvider)(implicit 
     SavingAccount.filter {
       _.accountId === account_id
     }.delete
+    HasAccount.filter{_.accountId===account_id}.delete
   }
 
 }

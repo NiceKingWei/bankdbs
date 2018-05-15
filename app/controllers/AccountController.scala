@@ -2,7 +2,6 @@ package controllers
 
 import java.sql.Date
 
-import dao.{AccountRow, CheckingAccountRow, SavingAccountRow}
 import javax.inject.{Inject, Singleton}
 import models.{AccountModel, BaseAccountRow}
 import myutils.MyUtils.{page_items, parseDate}
@@ -61,11 +60,11 @@ class AccountController @Inject()(account: AccountModel, cc: ControllerComponent
     }
   }
 
-  def insert(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
+  def insert(id_card:String): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     val body = request.body.asJson
     body.map { opt =>
       val req = opt.as[BaseAccountRow]
-      account.insert(req) transformWith {
+      account.insert(id_card,req) transformWith {
         case Success(r) => Future(Ok(r.toString))
         case Failure(_) => Future(BadRequest("data error"))
       }
