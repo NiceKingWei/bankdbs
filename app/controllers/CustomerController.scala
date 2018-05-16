@@ -18,6 +18,10 @@ class CustomerController @Inject()(customer: CustomerModel, cc: ControllerCompon
   implicit val writes2: Writes[ThisResult] = Json.writes[ThisResult]
   implicit val reads1: Reads[CustomerRow] = Json.reads[CustomerRow]
 
+  def index() = Action {
+    Ok(views.html.customer())
+  }
+
   def get(pg:Int,id_card:String,staff_id_card:String,name:String,contact_name:String): Action[AnyContent] = Action.async {
     val res = customer.search(id_card,staff_id_card,name,contact_name)
     res.map {col=>

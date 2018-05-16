@@ -32,18 +32,19 @@ class CustomerModel @Inject()(dbConfigProvider: DatabaseConfigProvider)(implicit
     if(idCard.isEmpty){
       Customer.filter { item =>
         (item.name like ("%"++name++"%")) &&
-        (item.staffIdCard like ("%"++staffIdCard++"%")) &&
+        (item.staffIdCard.ifNull("") like ("%"++staffIdCard++"%")) &&
         (item.contactName like ("%"++contactName++"%"))
       }.result
     }else{
       Customer.filter { item =>
         (item.idCard === idCard) &&
         (item.name like ("%"++name++"%")) &&
-        (item.staffIdCard like ("%"++staffIdCard++"%")) &&
+        (item.staffIdCard.ifNull("") like ("%"++staffIdCard++"%")) &&
         (item.contactName like ("%"++contactName++"%"))
       }.result
     }
   }
+
 
   def insert(row:CustomerRow):Future[Int] = db.run {
     Customer += row

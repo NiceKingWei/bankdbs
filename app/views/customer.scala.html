@@ -1,0 +1,320 @@
+@()
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Customer</title>
+
+  <link href="assets/stylesheets/bootstrap.min.css" rel="stylesheet">
+  <script src="assets/javascripts/jquery.min.js"></script>
+  <script src="assets/javascripts/bootstrap.min.js"></script>
+  <script src="assets/javascripts/vue.js"></script>
+</head>
+
+<body>
+  <div class="container" id="app">
+    <div class="col-sm-2"></div>
+    <div class="container col-sm-12">
+      <row>
+        <div class="panel panel-info col-sm-6">
+          <div class="panel-heading">
+            <h3 class="panel-title">
+              搜索
+            </h3>
+          </div>
+          <div class="panel-body">
+            <div class="row">
+              <div class="form-group col-sm-6">
+                <label for="search_id">身份证号</label>
+                <input type="text" id="search_id" class="form-control" v-model:value="search_id">
+              </div>
+              <div class="form-group col-sm-6">
+                <label for="search_name">姓名</label>
+                <input type="text" id="search_name" class="form-control" v-model:value="search_name">
+              </div>
+            </div>
+            <div class="row">
+              <div class="form-group col-sm-6">
+                <label for="search_date_from">业务经理身份证号</label>
+                <input type="text" id="search_date_from" class="form-control" v-model:value="search_staff_id">
+              </div>
+              <div class="form-group col-sm-6">
+                <label for="search_contact_name">联系人姓名</label>
+                <input type="text" id="search_contact_name" class="form-control" v-model:value="search_contact_name">
+              </div>
+            </div>
+            <div class="row">
+              <label class="col-sm-12" style="visibility: hidden;">占位置</label>
+              <div class="form-group col-sm-6">
+                <button type="submit" class="btn btn-info" v-on:click="do_search">搜索</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel panel-success col-sm-6">
+          <!-- 
+          case class CustomerRow(
+            idCard: String, 
+            staffIdCard: Option[String] = None,
+            name: String, 
+            phone: String, 
+            address: String, 
+            contactName: String, 
+            contactPhone: String, 
+            contactEmail: String, 
+            contactRole: String,
+            role: Option[String] = None)
+         -->
+          <div class="panel-heading">
+            <h3 class="panel-title">
+              编辑
+            </h3>
+          </div>
+          <div class="panel-body">
+            <div class="row">
+              <div class="form-group col-sm-6">
+                <label for="edit_id">身份证号</label>
+                <input type="text" id="edit_id" class="form-control" v-model:value="choosed_item.idCard">
+              </div>
+              <div class="form-group col-sm-6">
+                <label for="edit_name">姓名</label>
+                <input type="text" id="edit_name" class="form-control" v-model:value="choosed_item.name">
+              </div>
+            </div>
+            <div class="row">
+              <div class="form-group col-sm-6">
+                <label for="edit_staff">业务经理身份证号</label>
+                <input type="text" id="edit_staff" class="form-control" v-model:value="choosed_item.staffIdCard">
+              </div>
+              <div class="form-group col-sm-6">
+                <label for="edit_role">业务经理角色</label>
+                <input type="text" id="edit_role" class="form-control" v-model:value="choosed_item.role">
+              </div>
+            </div>
+            <div class="row">
+              <div class="form-group col-sm-6">
+                <label for="edit_contactName">联系人姓名</label>
+                <input type="text" id="edit_contactName" class="form-control" v-model:value="choosed_item.contactName">
+              </div>
+              <div class="form-group col-sm-6">
+                <label for="edit_contactPhone">联系人电话</label>
+                <input type="text" id="edit_contactPhone" class="form-control" v-model:value="choosed_item.contactPhone">
+              </div>
+            </div>
+            <div class="row">
+              <div class="form-group col-sm-6">
+                <label for="edit_contactEmail">联系人 Email</label>
+                <input type="text" id="edit_contactEmail" class="form-control" v-model:value="choosed_item.contactEmail">
+              </div>
+              <div class="form-group col-sm-6">
+                <label for="edit_contactRole">联系人和客户的关系</label>
+                <input type="text" id="edit_contactRole" class="form-control" v-model:value="choosed_item.contactRole">
+              </div>
+            </div>
+            <div class="row">
+              <div class="form-group col-sm-12">
+                <label for="edit_address">地址</label>
+                <input type="text" id="edit_address" class="form-control" v-model:value="choosed_item.address">
+              </div>
+            </div>
+            <div class="row">
+              <div class="form-group col-sm-6">
+                <label for="edit_phone">联系电话</label>
+                <input type="text" id="edit_phone" class="form-control" v-model:value="choosed_item.phone">
+              </div>
+              <div class="form-group col-sm-6">
+                <label class="col-sm-12" style="visibility: hidden;">占位置</label>
+                <button type="submit" class="btn btn-success" v-on:click="do_insert">增加</button>
+                <button type="submit" class="btn btn-warning" v-on:click="do_update">修改</button>
+                <button type="submit" class="btn btn-danger" v-on:click="do_remove">删除</button>
+              </div>
+              <div class="clearfix"></div>
+            </div>
+          </div>
+        </div>
+        <div class="clearfix"></div>
+      </row>
+      <row>
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th>身份证号</th>
+              <th>姓名</th>
+              <th>电话</th>
+              <th>地址</th>
+              <th>联系人姓名</th>
+              <th>联系人电话</th>
+              <th>联系人 Email </th>
+              <th>联系人和客户的关系</th>
+              <th>业务经理身份证号</th>
+              <th>业务经理角色</th>
+            </tr>
+          </thead>
+          <tbody v-on:mouseout="row_over=-1">
+            <tr v-for="(row,index) of rows" v-on:mouseover="row_over=index" v-on:click="on_choose(index)" v-bind:class="{danger:index==row_choose,info:index==row_over}">
+              <td>{{row.idCard}}</td>
+              <td>{{row.name}}</td>
+              <td>{{row.phone}}</td>
+              <td>{{row.address}}</td>
+              <td>{{row.contactName}}</td>
+              <td>{{row.contactPhone}}</td>
+              <td>{{row.contactEmail}}</td>
+              <td>{{row.contactRole}}</td>
+              <td>{{row.staffIdCard}}</td>
+              <td>{{row.role}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </row>
+      <row>
+        <nav aria-label="Page navigation" class="col-sm-12">
+          <ul class="pagination">
+            <li>
+              <a href="#" id="pg_prev" v-on:click="change_page(-1)">
+                <span aria-hidden="true">&laquo;</span>
+              </a>
+            </li>
+            <li v-for="off in offs" v-if="in_range(page_cur+off)" v-bind:class="{active:off==0}">
+              <a href="#" v-on:click="change_page(off)">{{page_cur+off+1}}</a>
+            </li>
+            <li>
+              <a href="#" id="pg_next" v-on:click="change_page(1)">
+                <span aria-hidden="true">&raquo;</span>
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </row>
+    </div>
+    <p id="debug">{{debug}}</p>
+  </div>
+  <script>
+    var app = new Vue({
+      el: "#app",
+      data: {
+        page_cur: 0,
+        page_count: 1,
+        page_items: 10,
+        offs: [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5],
+        search_id: "",
+        search_name: "",
+        search_contact_name: "",
+        search_staff_id: "",
+        rows: [],
+        row_over: -1,
+        row_choose: -1,
+        choosed_item: {},
+        debug: ""
+      },
+      mounted: function () {
+        this.change_page(0);
+        if (this.rows.length != 0) this.on_choose(0);
+      },
+      methods: {
+        change_page: function (delta) {
+          var _self = this;
+          var new_cur = this.page_cur + delta;
+          if (new_cur < 0 || new_cur > this.page_count) return;
+          this.page_cur = new_cur;
+          var req = {
+            'pg': new_cur,
+            'id_card': this.search_id,
+            'name': this.search_name,
+            'staff_id_card': this.search_staff_id,
+            'contact_name': this.search_contact_name
+          };
+          $.ajax({
+            'url': "api/customer",
+            'type': 'get',
+            'contentType': 'application/json',
+            'data': req,
+            'error': function (xhr) {
+              alert("Error");
+            },
+            'success': function (response) {
+              console.log(response);
+              _self.page_count = response.count;
+              _self.rows = response.rows;
+              _self.on_choose(0);
+            }
+          });
+        },
+        in_range: function (n) {
+          return n >= 0 && n < this.page_count;
+        },
+        do_search: function () {
+          this.page_cur = 0;
+          this.change_page(0);
+        },
+        on_choose: function (index) {
+          this.row_choose = index;
+          this.choosed_item = $.extend(true, {}, this.rows[index]);
+        },
+        refresh: function () {
+          this.search_id = "";
+          this.search_name = "";
+          this.search_contact_name = "";
+          this.search_staff_id = "";
+          this.change_page(0);
+        },
+        do_insert: function () {
+          var _self = this;
+          $.ajax({
+            'url': "api/customer",
+            'type': 'post',
+            'contentType': 'application/json',
+            'data': JSON.stringify(this.choosed_item),
+            'error': function (xhr) {
+              alert(xhr.responseText);
+            },
+            'success': function (response) {
+              _self.page_cur = 0;
+              _self.refresh();
+            }
+          });
+        },
+        do_remove: function () {
+          var _self = this;
+          $.ajax({
+            'url': "api/customer",
+            'type': 'delete',
+            'contentType': 'application/json',
+            'data': JSON.stringify(this.rows[this.row_choose]),
+            'error': function (xhr) {
+              alert(xhr.responseText);
+            },
+            'success': function (response) {
+              _self.refresh();
+            }
+          });
+        },
+        do_update: function () {
+          var _self = this;
+          $.ajax({
+            'url': "api/customer",
+            'type': 'put',
+            'contentType': 'application/json',
+            'data': JSON.stringify({
+              'old_row': this.rows[this.row_choose],
+              'new_row': this.choosed_item
+            }),
+            'error': function (xhr) {
+              alert(xhr.responseText);
+            },
+            'success': function (response) {
+              _self.refresh();
+            }
+          });
+        }
+      }
+    });
+  </script>
+
+</body>
+
+</html>

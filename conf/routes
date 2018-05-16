@@ -22,6 +22,7 @@ POST    /api/account/*id_card       controllers.AccountController.insert(id_card
 PUT     /api/account                controllers.AccountController.update
 DELETE  /api/account                controllers.AccountController.delete
 
+GET     /customer                   controllers.CustomerController.index
 GET     /api/customer               controllers.CustomerController.get(pg:Int,id_card:String,staff_id_card:String,name:String,contact_name:String)
 POST    /api/customer               controllers.CustomerController.insert
 PUT     /api/customer               controllers.CustomerController.update
