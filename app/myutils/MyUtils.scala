@@ -4,6 +4,8 @@ package myutils
   * Json support
   */
 import java.sql.Date
+import java.text.SimpleDateFormat
+
 import play.api.libs.json._
 
 object MyUtils{
@@ -20,4 +22,14 @@ object MyUtils{
       new Date(0)
     }
   }
+
+  implicit val date_writes: Writes[Date] = (o: Date) => {
+    val ft = new SimpleDateFormat("yyyy-MM-dd")
+    JsString(ft.format(new java.util.Date(o.getTime)))
+  }
+
+//  implicit val date_reads: Reads[Date] = (js: JsValue) => {
+//    val ft = new SimpleDateFormat("yyyy-mm-dd")
+//    JsString(ft.format(new java.util.Date(o.getTime)))
+//  }
 }

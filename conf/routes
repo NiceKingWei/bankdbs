@@ -11,7 +11,8 @@ POST    /api/subbranch              controllers.SubbranchController.insert
 PUT     /api/subbranch              controllers.SubbranchController.update
 DELETE  /api/subbranch              controllers.SubbranchController.delete
 
-GET     /api/staff                  controllers.StaffController.get(pg:Int,id:String,name:String,bankName:String,date_from:String,date_to:String)
+GET     /staff                      controllers.StaffController.index
+GET     /api/staff                  controllers.StaffController.get(pg:Int,id:String,name:String,bankName:String,dateFrom:String,dateTo:String)
 POST    /api/staff                  controllers.StaffController.insert
 PUT     /api/staff                  controllers.StaffController.update
 DELETE  /api/staff                  controllers.StaffController.delete
@@ -25,6 +26,11 @@ GET     /api/customer               controllers.CustomerController.get(pg:Int,id
 POST    /api/customer               controllers.CustomerController.insert
 PUT     /api/customer               controllers.CustomerController.update
 DELETE  /api/customer               controllers.CustomerController.delete
+
+GET     /api/loan                   controllers.LoanController.get(pg:Int,loanNumber: String, bankName: String, customerID: Seq[String], minMoney: Double, maxMoney: Double)
+POST    /api/loan                   controllers.LoanController.insert
+POST    /api/pay                    controllers.LoanController.insertPay
+DELETE  /api/loan                   controllers.LoanController.delete
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

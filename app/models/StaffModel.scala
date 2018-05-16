@@ -25,7 +25,7 @@ class StaffModel @Inject()(dbConfigProvider: DatabaseConfigProvider)(implicit ec
   import dbConfig._
 
   def search(staffIdCard:String,name:String,bankName:String,minDate:Date,maxDate:Date) : Future[Seq[StaffRow]] = db.run {
-    if(staffIdCard.isEmpty){
+    val query = if(staffIdCard.isEmpty){
       Staff.filter { item =>
         (item.name like ("%"++name++"%")) &&
         (item.bankName like ("%"++bankName++"%")) &&
@@ -39,6 +39,7 @@ class StaffModel @Inject()(dbConfigProvider: DatabaseConfigProvider)(implicit ec
         (item.startDate>=minDate && item.startDate<=maxDate)
       }.result
     }
+    query
   }
 
   def insert(row:StaffRow):Future[Int] = db.run {
@@ -50,6 +51,7 @@ class StaffModel @Inject()(dbConfigProvider: DatabaseConfigProvider)(implicit ec
   }
 
   def delete(staffIdCard:String):Future[Int] = db.run {
+    println(staffIdCard)
     Staff.filter{_.staffIdCard===staffIdCard}.delete
   }
 

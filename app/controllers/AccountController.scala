@@ -26,7 +26,7 @@ class AccountController @Inject()(account: AccountModel, cc: ControllerComponent
     val max_date = parseDate(date_to)
     val res = account.search(account_id,account_type,bank_name,min_money,max_money,min_date,if (max_date.getTime==0) new Date(Long.MaxValue) else max_date)
     res.map {col=>
-      Ok(ThisResult(col.size,col.slice(page_items*pg,page_items*(pg+1))).toJson.toString)
+      Ok(ThisResult(col.size,col.slice(page_items*pg,page_items*(pg+1))).toJson)
     }
   }
 

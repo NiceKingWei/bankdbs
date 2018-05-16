@@ -9,7 +9,7 @@ var app = new Vue({
     search_city: "",
     search_min: 0,
     search_max: 1e12,
-    rows: {},//[{bankName:"bank",city:"city",money:1},{bankName:"bank",city:"city",money:2}],
+    rows: [],//[{bankName:"bank",city:"city",money:1},{bankName:"bank",city:"city",money:2}],
     row_over:-1,
     row_choose:-1,
     choosed_item:{},
@@ -23,7 +23,7 @@ var app = new Vue({
     change_page: function (delta) {
       var _self = this;
       var new_cur = this.page_cur + delta;
-      if (new_cur < 0 || new_cur >= this.page_count) return;
+      if (new_cur < 0 || new_cur > this.page_count) return;
       this.page_cur = new_cur;
       var req = {
         'pg': new_cur,

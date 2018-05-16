@@ -18,96 +18,99 @@
 <body>
   <div class="container" id="app">
     <div class="col-sm-2"></div>
-    <div class="container col-sm-8">
-      <div class="panel-group" id="accordion">
-        <div class="panel panel-info">
-          <div class="panel-heading">
-            <h3 class="panel-title">
-              <a data-toggle="" data-parent="#accordion" href="#search_body">搜索</a>
-            </h3>
-          </div>
-          <div id="search_body">
-            <div class="panel-body">
-              <div class="row">
-                <div class="form-group col-sm-6">
-                  <label for="search_name">支行名称</label>
-                  <input type="text" id="search_name" class="form-control" v-model:value="search_name">
+    <div class="container col-sm-12">
+      <row>
+          <div class="panel panel-info col-sm-6">
+            <div class="panel-heading">
+              <h3 class="panel-title">
+                <a data-toggle="" data-parent="#accordion" href="#search_body">搜索</a>
+              </h3>
+            </div>
+            <div id="search_body">
+              <div class="panel-body">
+                <div class="row">
+                  <div class="form-group col-sm-6">
+                    <label for="search_name">支行名称</label>
+                    <input type="text" id="search_name" class="form-control" v-model:value="search_name">
+                  </div>
+                  <div class="form-group col-sm-6">
+                    <label for="search_city">城市</label>
+                    <input type="text" id="search_city" class="form-control" v-model:value="search_city">
+                  </div>
                 </div>
-                <div class="form-group col-sm-6">
-                  <label for="search_city">城市</label>
-                  <input type="text" id="search_city" class="form-control" v-model:value="search_city">
-                </div>
-              </div>
-              <div class="row">
-                <div class="form-group col-sm-6">
-                  <label for="search_min">资产最小值</label>
-                  <input type="text" class="form-control" id="search_min" v-model:value="search_min" placeholder="0.00">
-                </div>
+                <div class="row">
+                  <div class="form-group col-sm-6">
+                    <label for="search_min">资产最小值</label>
+                    <input type="text" class="form-control" id="search_min" v-model:value="search_min" placeholder="0.00">
+                  </div>
 
-                <div class="form-group col-sm-6">
-                  <label for="search_min">资产最大值</label>
-                  <input type="text" class="form-control" id="search_max" v-model:value="search_max" placeholder="inf">
+                  <div class="form-group col-sm-6">
+                    <label for="search_min">资产最大值</label>
+                    <input type="text" class="form-control" id="search_max" v-model:value="search_max" placeholder="inf">
+                  </div>
                 </div>
-              </div>
-              <div class="row">
-                <div class="form-group col-sm-6">
-                  <button type="submit" class="btn btn-info" v-on:click="do_search">搜索</button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="panel panel-success">
-          <div class="panel-heading">
-            <h3 class="panel-title">
-              <a data-toggle="" data-parent="#accordion" href="#edit_body">编辑</a>
-            </h3>
-          </div>
-          <div id="edit_body">
-            <div class="panel-body">
-              <div class="row">
-                <div class="form-group col-sm-6">
-                  <label for="edit_name">支行名称</label>
-                  <input type="text" class="form-control" id="edit_name" v-model:value="choosed_item.bankName">
-                </div>
-                <div class="form-group col-sm-6">
-                  <label for="edit_city">城市</label>
-                  <input type="text" class="form-control" id="edit_city" v-model:value="choosed_item.city">
-                </div>
-              </div>
-              <div class="row">
-                <div class="form-group col-sm-6">
-                  <label for="edit_money">资产</label>
-                  <input type="money" class="form-control" id="edit_money"  v-model:value="choosed_item.money">
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-sm-6">
-                  <button type="submit" class="btn btn-success" v-on:click="do_insert">增加</button>
-                  <button type="submit" class="btn btn-warning" v-on:click="do_update">修改</button>
-                  <button type="submit" class="btn btn-danger" v-on:click="do_remove">删除</button>
+                <div class="row">
+                  <div class="form-group col-sm-6">
+                    <button type="submit" class="btn btn-info" v-on:click="do_search">搜索</button>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      </div>
-      <table class="table table-bordered">
-        <thead>
-          <tr>
-            <th>名称</th>
-            <th>城市</th>
-            <th>资产</th>
-          </tr>
-        </thead>
-        <tbody v-on:mouseout="row_over=-1">
-          <tr v-for="(row,index) of rows" v-on:mouseover="row_over=index" v-on:click="on_choose(index)" v-bind:class="{danger:index==row_choose,info:index==row_over}">
-            <td>{{row.bankName}}</td>
-            <td>{{row.city}}</td>
-            <td>{{row.money}}</td>
-          </tr>
-        </tbody>
-      </table>
+          <div class="panel panel-success col-sm-6">
+            <div class="panel-heading">
+              <h3 class="panel-title">
+                <a data-toggle="" data-parent="#accordion" href="#edit_body">编辑</a>
+              </h3>
+            </div>
+            <div id="edit_body">
+              <div class="panel-body">
+                <div class="row">
+                  <div class="form-group col-sm-6">
+                    <label for="edit_name">支行名称</label>
+                    <input type="text" class="form-control" id="edit_name" v-model:value="choosed_item.bankName">
+                  </div>
+                  <div class="form-group col-sm-6">
+                    <label for="edit_city">城市</label>
+                    <input type="text" class="form-control" id="edit_city" v-model:value="choosed_item.city">
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="form-group col-sm-6">
+                    <label for="edit_money">资产</label>
+                    <input type="money" class="form-control" id="edit_money"  v-model:value="choosed_item.money">
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="form-group col-sm-6">
+                    <button type="submit" class="btn btn-success" v-on:click="do_insert">增加</button>
+                    <button type="submit" class="btn btn-warning" v-on:click="do_update">修改</button>
+                    <button type="submit" class="btn btn-danger" v-on:click="do_remove">删除</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        <div class="clearfix"></div>
+      </row>
+      <row>
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th>名称</th>
+              <th>城市</th>
+              <th>资产</th>
+            </tr>
+          </thead>
+          <tbody v-on:mouseout="row_over=-1">
+            <tr v-for="(row,index) of rows" v-on:mouseover="row_over=index" v-on:click="on_choose(index)" v-bind:class="{danger:index==row_choose,info:index==row_over}">
+              <td>{{row.bankName}}</td>
+              <td>{{row.city}}</td>
+              <td>{{row.money}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </row>
       <row>
         <nav aria-label="Page navigation" class="col-sm-12">
           <ul class="pagination">

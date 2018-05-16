@@ -21,13 +21,18 @@ class StaffController @Inject()(staff: StaffModel, cc: ControllerComponents)(imp
   implicit val reads1: Reads[StaffRow] = Json.reads[StaffRow]
 
 
-  def get(pg:Int,id:String,name:String,bankName:String,date_from:String,date_to:String): Action[AnyContent] = Action.async {
-    val min_date = parseDate(date_from)
-    val max_date = parseDate(date_to)
+  def index() = Action {
+    Ok(views.html.staff())
+  }
+
+  def get(pg:Int,id:String,name:String,bankName:String,dateFrom:String,dateTo:String): Action[AnyContent] = Action.async {
+    val min_date = parseDate(dateFrom)
+    val max_date = parseDate(dateTo)
+    val now = new java.util.Date().getTime
     val res = staff.search(id,name,bankName,min_date,
-      if (max_date.getTime==0) new Date(Long.MaxValue) else max_date)
+      if (max_date.getTime==0) new Date(now) else max_date)
     res.map {col=>
-      Ok(ThisResult(col.size,col.slice(page_items*pg,page_items*(pg+1))).toJson.toString)
+      Ok(ThisResult(col.size,col.slice(page_items*pg,page_items*(pg+1))).toJson)
     }
   }
 
@@ -52,8 +57,8 @@ class StaffController @Inject()(staff: StaffModel, cc: ControllerComponents)(imp
     val body = request.body.asJson
     body.map { opt =>
       val req = opt.as[StaffRow]
-      staff.delete(req.bankName) transformWith {
-        case Success(r) => Future(Ok(r.toString))
+      staff.delete(req.staffIdCard) transformWith {
+        case Success(r) => if(r!=0) Future(Ok(r.toString)) else Future(BadRequest("0 row deleted"))
         case Failure(_) => Future(BadRequest("data error"))
       }
     }.getOrElse {
