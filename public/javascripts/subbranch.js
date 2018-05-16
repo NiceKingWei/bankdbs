@@ -8,7 +8,7 @@ var app = new Vue({
     search_name: "",
     search_city: "",
     search_min: 0,
-    search_max: 1e12,
+    search_max: 1e20,
     rows: [],//[{bankName:"bank",city:"city",money:1},{bankName:"bank",city:"city",money:2}],
     row_over:-1,
     row_choose:-1,
@@ -62,7 +62,7 @@ var app = new Vue({
       this.search_city = "";
       this.search_name = "";
       this.search_min = 0;
-      this.search_max = 1e12;
+      this.search_max = 1e20;
       this.change_page(0);
     },
     do_insert:function(){

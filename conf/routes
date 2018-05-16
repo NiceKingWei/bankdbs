@@ -17,6 +17,7 @@ POST    /api/staff                  controllers.StaffController.insert
 PUT     /api/staff                  controllers.StaffController.update
 DELETE  /api/staff                  controllers.StaffController.delete
 
+GET     /account                    controllers.AccountController.index
 GET     /api/account                controllers.AccountController.get(pg:Int,account_id:String,account_type:Int,bank_name:String,min_money:Double,max_money:Double,date_from:String,date_to:String)
 POST    /api/account/*id_card       controllers.AccountController.insert(id_card:String)
 PUT     /api/account                controllers.AccountController.update

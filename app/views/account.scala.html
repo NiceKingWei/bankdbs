@@ -1,0 +1,380 @@
+@()
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Account</title>
+
+  <link href="assets/stylesheets/bootstrap.min.css" rel="stylesheet">
+  <script src="assets/javascripts/jquery.min.js"></script>
+  <script src="assets/javascripts/bootstrap.min.js"></script>
+  <script src="assets/javascripts/vue.js"></script>
+</head>
+
+<body>
+  <div class="container" id="app">
+    <div class="col-sm-2"></div>
+    <div class="container col-sm-12">
+      <row>
+        <div class="panel panel-info col-sm-6">
+          <div class="panel-heading">
+            <h3 class="panel-title">
+              搜索
+            </h3>
+          </div>
+          <div class="panel-body">
+            <div class="row">
+              <div class="form-group col-sm-6">
+                <label for="search_id">账户号</label>
+                <input type="text" id="search_id" class="form-control" v-model:value="search_id">
+              </div>
+              <div class="form-group col-sm-6">
+                <label for="search_name">支行名称</label>
+                <input type="text" id="search_name" class="form-control" v-model:value="search_bank_name">
+              </div>
+            </div>
+            <div class="row">
+              <div class="form-group col-sm-6">
+                <label for="search_date_from">业务经理身份证号</label>
+                <input type="text" id="search_date_from" class="form-control" v-model:value="search_staff_id">
+              </div>
+              <div class="form-group col-sm-6">
+                <label for="search_contact_name">联系人姓名</label>
+                <input type="text" id="search_contact_name" class="form-control" v-model:value="search_contact_name">
+              </div>
+            </div>
+            <div class="row">
+              <div class="form-group col-sm-6">
+                <label for="search_min">资产最小值</label>
+                <input type="text" class="form-control" id="search_min" v-model:value="search_min" placeholder="0.00">
+              </div>
+              <div class="form-group col-sm-6">
+                <label for="search_min">资产最大值</label>
+                <input type="text" class="form-control" id="search_max" v-model:value="search_max" placeholder="inf">
+              </div>
+            </div>
+            <div class="row">
+              <div class="form-group col-sm-6">
+                <label for="search_date_from">开户日期 (yyyy-MM-dd) 从</label>
+                <input type="text" id="search_date_from" class="form-control" v-model:value="search_date_from">
+              </div>
+              <div class="form-group col-sm-6">
+                <label for="search_date_to">到</label>
+                <input type="text" id="search_date_to" class="form-control" v-model:value="search_date_to">
+              </div>
+            </div>
+            <div class="row">
+              <div class="form-group col-sm-6">
+                  <input type="checkbox" id="saving" value="true" v-model="search_account_type_saving">
+                  <label for="saving">储蓄账户</label>
+                  <input type="checkbox" id="checking" value="true" v-model="search_account_type_checking">
+                  <label for="checking">支票账户</label>
+              </div>
+              <div class="form-group col-sm-6">
+                  <label class="col-sm-12" style="visibility: hidden;">占位置</label>
+                  <button type="submit" class="btn btn-info" v-on:click="do_search">搜索</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel panel-success col-sm-6">
+          <!-- 
+            is_saving:Boolean,
+            accountId: String,
+            bankName: Option[String] = None,
+            money: Double,
+            date: java.sql.Date, 
+            rate_creditLine: Double, 
+            currency: String
+         -->
+          <div class="panel-heading">
+            <h3 class="panel-title">
+              编辑
+            </h3>
+          </div>
+          <div class="panel-body">
+            <div class="row">
+              <div class="form-group col-sm-6">
+                <label for="edit_id">账户号</label>
+                <input type="text" id="edit_id" class="form-control" v-model:value="choosed_item.accountId">
+              </div>
+              <div class="form-group col-sm-6">
+                <label for="edit_name">开户银行</label>
+                <input type="text" id="edit_name" class="form-control" v-model:value="choosed_item.bankName">
+              </div>
+            </div>
+            <div class="row">
+              <div class="form-group col-sm-6">
+                <label for="edit_staff">金额</label>
+                <input type="text" id="edit_staff" class="form-control" v-model:value="choosed_item.money">
+              </div>
+              <div class="form-group col-sm-6">
+                <label for="edit_role">开户日期</label>
+                <input type="text" id="edit_role" class="form-control" v-model:value="choosed_item.date">
+              </div>
+            </div>
+            <div class="row">
+              <div class="form-group col-sm-6">
+                <label for="edit_1">{{label1}}</label>
+                <input type="text" id="edit_1" class="form-control" v-model:value="choosed_item.rate_creditLine">
+              </div>
+              <div class="form-group col-sm-6" v-bind:style="{visibility:hide}" key="currency">
+                <label for="edit_2">{{label2}}</label>
+                <input type="text" id="edit_2" class="form-control" v-model:value="choosed_item.currency">
+              </div>
+            </div>
+            <div class="row">
+              <div class="form-group col-sm-12">
+                <label for="edit_selected">账户类型</label>
+                <select v-model="edit_selected" class="col-sm-12 form-control" >
+                  <option>储蓄账户</option>
+                  <option>支票账户</option>
+                </select>
+              </div>
+            </div>
+            <div class="row">
+              <div class="form-group col-sm-6">
+                <label class="col-sm-12" style="visibility: hidden;">占位置</label>
+                <button type="submit" class="btn btn-success" v-on:click="do_insert">增加</button>
+                <button type="submit" class="btn btn-warning" v-on:click="do_update">修改</button>
+                <button type="submit" class="btn btn-danger" v-on:click="do_remove">删除</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="clearfix"></div>
+      </row>
+      <row>
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th>身份证号</th>
+              <th>姓名</th>
+              <th>电话</th>
+              <th>地址</th>
+              <th>联系人姓名</th>
+              <th>联系人电话</th>
+              <th>联系人 Email </th>
+              <th>联系人和客户的关系</th>
+              <th>业务经理身份证号</th>
+              <th>业务经理角色</th>
+            </tr>
+          </thead>
+          <tbody v-on:mouseout="row_over=-1">
+            <tr v-for="(row,index) of rows" v-on:mouseover="row_over=index" v-on:click="on_choose(index)" v-bind:class="{danger:index==row_choose,info:index==row_over}">
+              <td>{{row.idCard}}</td>
+              <td>{{row.name}}</td>
+              <td>{{row.phone}}</td>
+              <td>{{row.address}}</td>
+              <td>{{row.contactName}}</td>
+              <td>{{row.contactPhone}}</td>
+              <td>{{row.contactEmail}}</td>
+              <td>{{row.contactRole}}</td>
+              <td>{{row.staffIdCard}}</td>
+              <td>{{row.role}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </row>
+      <row>
+        <nav aria-label="Page navigation" class="col-sm-12">
+          <ul class="pagination">
+            <li>
+              <a href="#" id="pg_prev" v-on:click="change_page(-1)">
+                <span aria-hidden="true">&laquo;</span>
+              </a>
+            </li>
+            <li v-for="off in offs" v-if="in_range(page_cur+off)" v-bind:class="{active:off==0}">
+              <a href="#" v-on:click="change_page(off)">{{page_cur+off+1}}</a>
+            </li>
+            <li>
+              <a href="#" id="pg_next" v-on:click="change_page(1)">
+                <span aria-hidden="true">&raquo;</span>
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </row>
+    </div>
+    <p id="debug">{{debug}}</p>
+  </div>
+  <script>
+    var app = new Vue({
+      el: "#app",
+      data: {
+        page_cur: 0,
+        page_count: 1,
+        page_items: 10,
+        offs: [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5],
+        search_bank_name: "",
+        search_contact_name: "",
+        search_id: "",
+        search_date_from: "",
+        search_date_to: "",
+        search_staff_id: "",
+        search_min: 0,
+        search_max: 1e20,
+        search_account_type_saving: true,
+        search_account_type_checking: true,
+        rows: [{
+          is_saving: true,
+          accountId: "123",
+          bankName: "bank",
+          money: 123,
+          date: "2018-01-01",
+          rate_creditLine: 2342,
+          currency: "type"
+        }],
+        row_over: -1,
+        row_choose: -1,
+        label1:"利率",
+        label2:"货币类型",
+        hide:false,
+        edit_selected:"储蓄账户",
+        choosed_item: {},
+        debug: ""
+      },
+      mounted: function () {
+        this.change_page(0);
+        if (this.rows.length != 0) this.on_choose(0);
+      },
+      computed: {
+        search_account_type: function () {
+          if (this.search_account_type_saving) {
+            if (this.search_account_type_checking) {
+              return 2;
+            } else {
+              return 0;
+            }
+          } else {
+            if (this.search_account_type_checking) {
+              return 1;
+            } else {
+              return -1;
+            }
+          }
+        }
+      },
+      watch: {
+        edit_selected: function (newItem, oldItem) {
+          if(newItem=="储蓄账户") this.choosed_item.is_saving = true;
+          else this.choosed_item.is_saving = false;
+          this.label1 = this.choosed_item.is_saving ? "利率" : "透支额";
+          this.label2 = this.choosed_item.is_saving ? "货币类型" : "无效";
+          this.hide = this.choosed_item.is_saving ? "visible" :"hidden";
+        }
+      },
+      methods: {
+        change_page: function (delta) {
+          var _self = this;
+          var new_cur = this.page_cur + delta;
+          if (new_cur < 0 || new_cur > this.page_count || this.search_account_type < 0) return;
+          this.page_cur = new_cur;
+          var req = {
+            'pg': new_cur,
+            'account_id': this.search_id,
+            'account_type': this.search_account_type,
+            'bank_name': this.search_bank_name,
+            'min_money': parseFloat(this.search_min),
+            'max_money': parseFloat(this.search_max),
+            'date_from': this.search_date_from,
+            'date_to': this.search_date_to
+          };
+          $.ajax({
+            'url': "api/account",
+            'type': 'get',
+            'contentType': 'application/json',
+            'data': req,
+            'error': function (xhr) {
+              alert("Error");
+            },
+            'success': function (response) {
+              _self.page_count = response.count;
+              _self.rows = response.rows;
+              _self.on_choose(0);
+            }
+          });
+        },
+        in_range: function (n) {
+          return n >= 0 && n < this.page_count;
+        },
+        do_search: function () {
+          this.page_cur = 0;
+          this.change_page(0);
+        },
+        on_choose: function (index) {
+          this.row_choose = index;
+          this.choosed_item = $.extend(true, {}, this.rows[index]);
+        },
+        refresh: function () {
+          this.search_bank_name = "";
+          this.search_contact_name = "";
+          this.search_id = "";
+          this.search_date_from = "";
+          this.search_date_to = "";
+          this.search_staff_id = "";
+          this.search_min = 0;
+          this.search_max = 1e20;
+          this.change_page(0);
+        },
+        do_insert: function () {
+          var _self = this;
+          this.choosed_item.money = parseFloat(this.choosed_item.money);
+          $.ajax({
+            'url': "api/account",
+            'type': 'post',
+            'contentType': 'application/json',
+            'data': JSON.stringify(this.choosed_item),
+            'error': function (xhr) {
+              alert(xhr.responseText);
+            },
+            'success': function (response) {
+              _self.page_cur = 0;
+              _self.refresh();
+            }
+          });
+        },
+        do_remove: function () {
+          var _self = this;
+          $.ajax({
+            'url': "api/account",
+            'type': 'delete',
+            'contentType': 'application/json',
+            'data': JSON.stringify(this.rows[this.row_choose]),
+            'error': function (xhr) {
+              alert(xhr.responseText);
+            },
+            'success': function (response) {
+              _self.refresh();
+            }
+          });
+        },
+        do_update: function () {
+          var _self = this;
+          $.ajax({
+            'url': "api/account",
+            'type': 'put',
+            'contentType': 'application/json',
+            'data': JSON.stringify({
+              'old_row': this.rows[this.row_choose],
+              'new_row': this.choosed_item
+            }),
+            'error': function (xhr) {
+              alert(xhr.responseText);
+            },
+            'success': function (response) {
+              _self.refresh();
+            }
+          });
+        }
+      }
+    });
+  </script>
+</body>
+
+</html>

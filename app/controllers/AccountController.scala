@@ -20,6 +20,10 @@ class AccountController @Inject()(account: AccountModel, cc: ControllerComponent
   implicit val writes2: Writes[ThisResult] = Json.writes[ThisResult]
   implicit val reads1: Reads[BaseAccountRow] = Json.reads[BaseAccountRow]
 
+  def index() = Action {
+    Ok(views.html.account())
+  }
+
   // account_type: 0 for saving,1 for checking,2 for both
   def get(pg:Int,account_id:String,account_type:Int,bank_name:String,min_money:Double,max_money:Double,date_from:String,date_to:String): Action[AnyContent] = Action.async {
     val min_date = parseDate(date_from)
