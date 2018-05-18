@@ -43,18 +43,18 @@
                 <input type="text" id="search_date_from" class="form-control" v-model:value="search_staff_id">
               </div>
               <div class="form-group col-sm-6">
-                <label for="search_contact_name">联系人姓名</label>
-                <input type="text" id="search_contact_name" class="form-control" v-model:value="search_contact_name">
+                <label for="search_contact_name">开户人身份证号</label>
+                <input type="text" id="search_contact_name" class="form-control" v-model:value="search_customer_id">
               </div>
             </div>
             <div class="row">
               <div class="form-group col-sm-6">
                 <label for="search_min">资产最小值</label>
-                <input type="text" class="form-control" id="search_min" v-model:value="search_min" placeholder="0.00">
+                <input type="text" class="form-control" id="search_min" v-model:value="search_min">
               </div>
               <div class="form-group col-sm-6">
                 <label for="search_min">资产最大值</label>
-                <input type="text" class="form-control" id="search_max" v-model:value="search_max" placeholder="inf">
+                <input type="text" class="form-control" id="search_max" v-model:value="search_max">
               </div>
             </div>
             <div class="row">
@@ -100,8 +100,8 @@
           <div class="panel-body">
             <div class="row">
               <div class="form-group col-sm-6">
-                <label for="edit_id">账户号</label>
-                <input type="text" id="edit_id" class="form-control" v-model:value="choosed_item.accountId">
+                <label for="edit_id">开户人身份证号</label>
+                <input type="text" id="edit_id" class="form-control" v-model:value="choosed_item.customerId">
               </div>
               <div class="form-group col-sm-6">
                 <label for="edit_name">开户银行</label>
@@ -110,7 +110,7 @@
             </div>
             <div class="row">
               <div class="form-group col-sm-6">
-                <label for="edit_staff">金额</label>
+                <label for="edit_staff">余额</label>
                 <input type="text" id="edit_staff" class="form-control" v-model:value="choosed_item.money">
               </div>
               <div class="form-group col-sm-6">
@@ -140,9 +140,9 @@
             <div class="row">
               <div class="form-group col-sm-6">
                 <label class="col-sm-12" style="visibility: hidden;">占位置</label>
-                <button type="submit" class="btn btn-success" v-on:click="do_insert">增加</button>
+                <button type="submit" class="btn btn-success" v-on:click="do_insert">开户</button>
                 <button type="submit" class="btn btn-warning" v-on:click="do_update">修改</button>
-                <button type="submit" class="btn btn-danger" v-on:click="do_remove">删除</button>
+                <button type="submit" class="btn btn-danger" v-on:click="do_remove">销户</button>
               </div>
             </div>
           </div>
@@ -153,30 +153,24 @@
         <table class="table table-bordered">
           <thead>
             <tr>
-              <th>身份证号</th>
-              <th>姓名</th>
-              <th>电话</th>
-              <th>地址</th>
-              <th>联系人姓名</th>
-              <th>联系人电话</th>
-              <th>联系人 Email </th>
-              <th>联系人和客户的关系</th>
-              <th>业务经理身份证号</th>
-              <th>业务经理角色</th>
+              <th>账户号</th>
+              <th>开户人身份证号</th>
+              <th>开户行名称</th>
+              <th>余额</th>
+              <th>开户日期</th>
+              <th>利率/透支额度</th>
+              <th>货币类型</th>
             </tr>
           </thead>
           <tbody v-on:mouseout="row_over=-1">
             <tr v-for="(row,index) of rows" v-on:mouseover="row_over=index" v-on:click="on_choose(index)" v-bind:class="{danger:index==row_choose,info:index==row_over}">
-              <td>{{row.idCard}}</td>
-              <td>{{row.name}}</td>
-              <td>{{row.phone}}</td>
-              <td>{{row.address}}</td>
-              <td>{{row.contactName}}</td>
-              <td>{{row.contactPhone}}</td>
-              <td>{{row.contactEmail}}</td>
-              <td>{{row.contactRole}}</td>
-              <td>{{row.staffIdCard}}</td>
-              <td>{{row.role}}</td>
+              <td>{{row.accountId}}</td>
+              <td>{{row.bankName}}</td>
+              <td>{{row.customerId}}</td>
+              <td>{{row.money}}</td>
+              <td>{{row.date}}</td>
+              <td>{{row.rate_creditLine}}</td>
+              <td>{{row.currency}}</td>
             </tr>
           </tbody>
         </table>
@@ -214,6 +208,7 @@
         search_bank_name: "",
         search_contact_name: "",
         search_id: "",
+        search_customer_id:"",
         search_date_from: "",
         search_date_to: "",
         search_staff_id: "",
@@ -278,6 +273,7 @@
           var req = {
             'pg': new_cur,
             'account_id': this.search_id,
+            'customer_id': this.search_customer_id,
             'account_type': this.search_account_type,
             'bank_name': this.search_bank_name,
             'min_money': parseFloat(this.search_min),
@@ -308,6 +304,7 @@
           this.change_page(0);
         },
         on_choose: function (index) {
+          var _self = this;
           this.row_choose = index;
           this.choosed_item = $.extend(true, {}, this.rows[index]);
         },
@@ -315,6 +312,7 @@
           this.search_bank_name = "";
           this.search_contact_name = "";
           this.search_id = "";
+          this.search_customer_id = "",
           this.search_date_from = "";
           this.search_date_to = "";
           this.search_staff_id = "";
@@ -325,8 +323,12 @@
         do_insert: function () {
           var _self = this;
           this.choosed_item.money = parseFloat(this.choosed_item.money);
+          this.choosed_item.isSaving = this.edit_selected=="储蓄账户";
+          this.choosed_item.accountId = "";
+          if(!this.choosed_item.currency) this.choosed_item.currency="";
+          this.choosed_item.rate_creditLine = parseFloat(this.choosed_item.rate_creditLine);
           $.ajax({
-            'url': "api/account",
+            'url': "api/account/" + this.choosed_item.customer_id,
             'type': 'post',
             'contentType': 'application/json',
             'data': JSON.stringify(this.choosed_item),
@@ -356,6 +358,11 @@
         },
         do_update: function () {
           var _self = this;
+          this.choosed_item.money = parseFloat(this.choosed_item.money);
+          this.choosed_item.isSaving = this.edit_selected=="储蓄账户";
+          this.choosed_item.accountId = "";
+          if(!this.choosed_item.currency) this.choosed_item.currency="";
+          this.choosed_item.rate_creditLine = parseFloat(this.choosed_item.rate_creditLine);
           $.ajax({
             'url': "api/account",
             'type': 'put',

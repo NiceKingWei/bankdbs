@@ -72,7 +72,7 @@ class LoanModel @Inject()(dbConfigProvider: DatabaseConfigProvider)(implicit ec:
   }
 
   def insertLoan(loan: LoanRow, customers: Seq[String]): Future[Option[Int]] = db.run {
-    Loan += loan
+    Loan += loan.copy(loanNumber = new java.util.Date().getTime.toString)
     CustomerLoan ++= customers map (x => CustomerLoanRow(loan.loanNumber, x))
   }
 
@@ -80,7 +80,7 @@ class LoanModel @Inject()(dbConfigProvider: DatabaseConfigProvider)(implicit ec:
     for ((state, _) <- getPay(pay.loanNumber);
          result <- db.run {
            if (state == 2) throw new RuntimeException()
-           else LoanPay += pay
+           else LoanPay += pay.copy(payId = new java.util.Date().getTime.toString)
          }
     ) yield result
 

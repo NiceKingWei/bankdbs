@@ -2,7 +2,7 @@ package models
 
 import java.sql.Date
 
-import dao.{DBTables, HasAccountRow}
+import dao.{DBTables, HasAccountRow, SavingAccountRow}
 import javax.inject.{Inject, Singleton}
 import play.api.db.slick.DatabaseConfigProvider
 import play.api.libs.json.{Json, Reads, Writes}
@@ -26,51 +26,68 @@ class AccountModel @Inject()(dbConfigProvider: DatabaseConfigProvider)(implicit 
   implicit val writes1: Writes[BaseAccountRow] = Json.writes[BaseAccountRow]
   implicit val reads1: Reads[BaseAccountRow] = Json.reads[BaseAccountRow]
 
-  def search(accountId: String, account_type: Int, bankName: String, minMoney: Double, maxMoney: Double, minDate: Date, maxDate: Date): Future[Seq[BaseAccountRow]] = {
+
+  def search(accountId: String, account_type: Int, customerId: String, bankName: String, minMoney: Double, maxMoney: Double, minDate: Date, maxDate: Date): Future[Seq[BaseAccountRow]] = {
     lazy val saving_result = db.run {
-      if (accountId.isEmpty) {
-        SavingAccount.filter { item =>
+      SavingAccount.filter { item =>
+        if (accountId.isEmpty) {
           (item.bankName like ("%" ++ bankName ++ "%")) &&
             (item.money >= minMoney && item.money <= maxMoney) &&
             (item.date >= minDate && item.date <= maxDate)
-        }.result
-      } else {
-        SavingAccount.filter { item =>
+        } else {
           (item.accountId === accountId) &&
             (item.bankName like ("%" ++ bankName ++ "%")) &&
             (item.money >= minMoney && item.money <= maxMoney) &&
             (item.date >= minDate && item.date <= maxDate)
-        }.result
-      }
+        }
+      }.flatMap { account =>
+        HasAccount.filter { has =>
+          if (customerId.isEmpty) {
+            has.accountId === account.accountId
+          } else {
+            (has.accountId === account.accountId) &&
+              (has.idCard === customerId)
+          }
+        }.map(has => (account, has))
+      }.result
     }
     lazy val checking_result = db.run {
-      if (accountId.isEmpty) {
-        CheckingAccount.filter { item =>
+      CheckingAccount.filter { item =>
+        if (accountId.isEmpty) {
           (item.bankName like ("%" ++ bankName ++ "%")) &&
             (item.money >= minMoney && item.money <= maxMoney) &&
             (item.date >= minDate && item.date <= maxDate)
-        }.result
-      } else {
-        CheckingAccount.filter { item =>
+        } else {
           (item.accountId === accountId) &&
             (item.bankName like ("%" ++ bankName ++ "%")) &&
             (item.money >= minMoney && item.money <= maxMoney) &&
             (item.date >= minDate && item.date <= maxDate)
-        }.result
-      }
+        }
+      }.flatMap { account =>
+        HasAccount.filter { has =>
+          if (customerId.isEmpty) {
+            has.accountId === account.accountId
+          } else {
+            (has.accountId === account.accountId) &&
+              (has.idCard === customerId)
+          }
+        }.map(has => (account, has))
+      }.result
     }
-    if (account_type == 0) {
-      for (x <- saving_result) yield x.map { item => BaseAccountRow.make(item) }
+
+    lazy val account_result = if (account_type == 0) {
+      for (x <- saving_result) yield x.map { item => BaseAccountRow.make(item._1, item._2.idCard) }
     } else if (account_type == 1) {
-      for (y <- checking_result) yield y.map { item => BaseAccountRow.make(item) }
+      for (y <- checking_result) yield y.map { item => BaseAccountRow.make(item._1, item._2.idCard) }
     } else {
       for (x <- checking_result;
            y <- saving_result)
-        yield x.map { item => BaseAccountRow.make(item) } ++ y.map { item => BaseAccountRow.make(item) }
+        yield x.map { item => BaseAccountRow.make(item._1, item._2.idCard) } ++ y.map { item => BaseAccountRow.make(item._1, item._2.idCard) }
     }
   }
-
-  def insert(id_card: String, row: BaseAccountRow): Future[Int] =
+  
+  def insert(row0: BaseAccountRow): Future[Int] = {
+    val row = row0.copy(accountId = new java.util.Date().getTime.toString)
     db.run {
       Account.flatMap { account =>
         HasAccount
@@ -79,27 +96,34 @@ class AccountModel @Inject()(dbConfigProvider: DatabaseConfigProvider)(implicit 
       }.result
     }.flatMap { accounts =>
       db.run {
-        if (accounts.exists { account =>
-          val is_saving = account._1.getOrElse(false)
-          is_saving == row.is_saving && account._2 == row.bankName.getOrElse("")
-        }) {
-          throw new RuntimeException()
-        } else {
-          if (row.is_saving) {
-            SavingAccount += row.toSaving
+        val stmt = {
+          if (accounts.exists { account =>
+            val is_saving = account._1.getOrElse(false)
+            is_saving == row.isSaving && account._2 == row.bankName.getOrElse("")
+          }) {
+            throw new RuntimeException()
           } else {
-            CheckingAccount += row.toChecking
+            (Account += row.toAccount).flatMap { _ =>
+              (if (row.isSaving) {
+                SavingAccount += row.toSaving
+              } else {
+                CheckingAccount += row.toChecking
+              }).flatMap { _ =>
+                HasAccount += HasAccountRow(row.accountId, row.customerId, Some(new Date(new java.util.Date().getTime)), Some(row.isSaving))
+              }
+            }
           }
-          HasAccount += HasAccountRow(id_card,row.accountId,Some(new Date(new java.util.Date().getTime)),Some(row.is_saving))
         }
+        stmt
       }
     }
+  }
 
   def update(old_row: BaseAccountRow, new_row: BaseAccountRow): Future[Int] = db.run {
-    if (old_row.is_saving != new_row.is_saving || old_row.accountId != new_row.accountId) {
+    if (old_row.isSaving != new_row.isSaving || old_row.accountId != new_row.accountId) {
       throw new MatchError("")
     } else {
-      if (old_row.is_saving) {
+      if (old_row.isSaving) {
         SavingAccount.filter(_.accountId === old_row.accountId).update(new_row.toSaving)
       } else {
         CheckingAccount.filter(_.accountId === old_row.accountId).update(new_row.toChecking)
@@ -108,13 +132,10 @@ class AccountModel @Inject()(dbConfigProvider: DatabaseConfigProvider)(implicit 
   }
 
   def delete(account_id: String): Future[Int] = db.run {
-    CheckingAccount.filter {
-      _.accountId === account_id
-    }.delete
-    SavingAccount.filter {
-      _.accountId === account_id
-    }.delete
-    HasAccount.filter{_.accountId===account_id}.delete
+    CheckingAccount.filter(_.accountId === account_id).delete
+    SavingAccount.filter(_.accountId === account_id).delete
+    HasAccount.filter(_.accountId === account_id).delete
+    Account.filter(_.accountId === account_id).delete
   }
 
 }

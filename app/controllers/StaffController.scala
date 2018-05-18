@@ -32,7 +32,7 @@ class StaffController @Inject()(staff: StaffModel, cc: ControllerComponents)(imp
     val res = staff.search(id,name,bankName,min_date,
       if (max_date.getTime==0) new Date(now) else max_date)
     res.map {col=>
-      Ok(ThisResult(col.size,col.slice(page_items*pg,page_items*(pg+1))).toJson)
+      Ok(ThisResult((col.size + page_items - 1) / page_items,col.slice(page_items*pg,page_items*(pg+1))).toJson)
     }
   }
 

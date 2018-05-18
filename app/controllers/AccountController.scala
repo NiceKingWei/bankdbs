@@ -25,12 +25,12 @@ class AccountController @Inject()(account: AccountModel, cc: ControllerComponent
   }
 
   // account_type: 0 for saving,1 for checking,2 for both
-  def get(pg:Int,account_id:String,account_type:Int,bank_name:String,min_money:Double,max_money:Double,date_from:String,date_to:String): Action[AnyContent] = Action.async {
+  def get(pg:Int,account_id:String,account_type:Int,customer_id:String,bank_name:String,min_money:Double,max_money:Double,date_from:String,date_to:String): Action[AnyContent] = Action.async {
     val min_date = parseDate(date_from)
     val max_date = parseDate(date_to)
-    val res = account.search(account_id,account_type,bank_name,min_money,max_money,min_date,if (max_date.getTime==0) new Date(Long.MaxValue) else max_date)
+    val res = account.search(account_id,account_type,customer_id,bank_name,min_money,max_money,min_date,if (max_date.getTime==0) new Date(new java.util.Date().getTime) else max_date)
     res.map {col=>
-      Ok(ThisResult(col.size,col.slice(page_items*pg,page_items*(pg+1))).toJson)
+      Ok(ThisResult((col.size + page_items - 1) / page_items,col.slice(page_items*pg,page_items*(pg+1))).toJson)
     }
   }
 
@@ -64,11 +64,11 @@ class AccountController @Inject()(account: AccountModel, cc: ControllerComponent
     }
   }
 
-  def insert(id_card:String): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
+  def insert(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     val body = request.body.asJson
     body.map { opt =>
       val req = opt.as[BaseAccountRow]
-      account.insert(id_card,req) transformWith {
+      account.insert(req) transformWith {
         case Success(r) => Future(Ok(r.toString))
         case Failure(_) => Future(BadRequest("data error"))
       }

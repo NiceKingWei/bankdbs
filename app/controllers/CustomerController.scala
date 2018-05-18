@@ -25,7 +25,7 @@ class CustomerController @Inject()(customer: CustomerModel, cc: ControllerCompon
   def get(pg:Int,id_card:String,staff_id_card:String,name:String,contact_name:String): Action[AnyContent] = Action.async {
     val res = customer.search(id_card,staff_id_card,name,contact_name)
     res.map {col=>
-      Ok(ThisResult(col.size,col.slice(page_items*pg,page_items*(pg+1))).toJson)
+      Ok(ThisResult((col.size + page_items - 1) / page_items,col.slice(page_items*pg,page_items*(pg+1))).toJson)
     }
   }
 

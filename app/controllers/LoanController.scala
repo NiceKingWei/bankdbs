@@ -27,7 +27,7 @@ class LoanController @Inject()(loan: LoanModel, cc: ControllerComponents)(implic
   def get(pg:Int,loanNumber: String, bankName: String, customerID: Seq[String], minMoney: Double, maxMoney: Double): Action[AnyContent] = Action.async {
     val res = loan.search(loanNumber,bankName,customerID,minMoney,if(maxMoney==0) Double.MaxValue else maxMoney)
     res.map {col=>
-      Ok(ThisResult(col.size,col.slice(page_items*pg,page_items*(pg+1))).toJson)
+      Ok(ThisResult((col.size + page_items - 1) / page_items,col.slice(page_items*pg,page_items*(pg+1))).toJson)
     }
   }
 
