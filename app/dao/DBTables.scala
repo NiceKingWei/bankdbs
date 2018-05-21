@@ -79,7 +79,7 @@ case class CustomerLoanRow(idCard: String, loanNumber: String)
   *  @param loanNumber Database column loan_number SqlType(CHAR), Length(255,false)
   *  @param date Database column date SqlType(DATE)
   *  @param money Database column money SqlType(DOUBLE) */
-case class LoanPayRow(payId: String, loanNumber: String, date: java.sql.Date, money: Double)
+  case class LoanPayRow(payId: String, loanNumber: String, date: java.sql.Date, money: Double)
 
 /** Slick data model trait for extension, choice of backend or usage in the cake pattern. (Make sure to initialize this late.) */
 trait DBTables {

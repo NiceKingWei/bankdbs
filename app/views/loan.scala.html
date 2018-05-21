@@ -7,7 +7,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>Staff</title>
+  <title>Loan</title>
 
   <link href="assets/stylesheets/bootstrap.min.css" rel="stylesheet">
   <script src="assets/javascripts/jquery.min.js"></script>
@@ -33,7 +33,7 @@
               <li>
                 <a href="subbranch">支行</a>
               </li>
-              <li class="active">
+              <li>
                 <a href="staff">员工</a>
               </li>
               <li>
@@ -42,7 +42,7 @@
               <li>
                 <a href="account">账户</a>
               </li>
-              <li>
+              <li class="active">
                 <a href="loan">贷款</a>
               </li>
               <li>
@@ -65,33 +65,33 @@
           <div class="panel-body">
             <div class="row">
               <div class="form-group col-sm-6">
-                <label for="search_id">身份证号</label>
-                <input type="text" id="search_id" class="form-control" v-model:value="search_id">
+                <label for="search_id">贷款号</label>
+                <input type="text" id="search_id" class="form-control" v-model:value="search_loan_number">
               </div>
               <div class="form-group col-sm-6">
-                <label for="search_name">姓名</label>
-                <input type="text" id="search_name" class="form-control" v-model:value="search_name">
+                <label for="search_name">支行名称</label>
+                <input type="text" id="search_name" class="form-control" v-model:value="search_bank_name">
+              </div>
+            </div>
+            <div class="row">
+              <div class="form-group col-sm-12">
+                <label for="search_date_from">客户身份证号集合 (格式为：xxx,yyy)</label>
+                <input type="text" id="search_date_from" class="form-control" v-model:value="search_customers">
               </div>
             </div>
             <div class="row">
               <div class="form-group col-sm-6">
-                <label for="search_date_from">开始工作日期 (yyyy-MM-dd) 从</label>
-                <input type="text" id="search_date_from" class="form-control" v-model:value="search_date_from">
+                <label for="search_min">金额最小值</label>
+                <input type="text" class="form-control" id="search_min" v-model:value="search_min">
               </div>
               <div class="form-group col-sm-6">
-                <label for="search_date_to">到</label>
-                <input type="text" id="search_date_to" class="form-control" v-model:value="search_date_to">
-              </div>
-            </div>
-            <div class="row">
-              <div class="form-group col-sm-6">
-                <label for="search_bankname">从属支行名称</label>
-                <input type="text" id="search_bankname" class="form-control" v-model:value="search_bankname">
+                <label for="search_min">金额最大值</label>
+                <input type="text" class="form-control" id="search_max" v-model:value="search_max">
               </div>
             </div>
             <div class="row">
-              <label class="col-sm-12" style="visibility: hidden;">占位置</label>
               <div class="form-group col-sm-6">
+                <label class="col-sm-12" style="visibility: hidden;">占位置</label>
                 <button type="submit" class="btn btn-info" v-on:click="do_search">搜索</button>
               </div>
             </div>
@@ -99,13 +99,6 @@
         </div>
 
         <div class="panel panel-success col-sm-6">
-          <!-- 
-          staffIdCard: String, 
-          bankName: String, 
-          name: String, 
-          phone: String, 
-          address: String, 
-          startDate: java.sql.Date -->
           <div class="panel-heading">
             <h3 class="panel-title">
               编辑
@@ -113,68 +106,96 @@
           </div>
           <div class="panel-body">
             <div class="row">
-              <div class="form-group col-sm-6">
-                <label for="edit_id">身份证号</label>
-                <input type="text" id="edit_id" class="form-control" v-model:value="choosed_item.staffIdCard">
-              </div>
-              <div class="form-group col-sm-6">
-                <label for="edit_name">姓名</label>
-                <input type="text" id="edit_name" class="form-control" v-model:value="choosed_item.name">
-              </div>
-            </div>
-            <div class="row">
-              <div class="form-group col-sm-6">
-                <label for="edit_date">开始工作日期 (yyyy-MM-dd)</label>
-                <input type="text" id="edit_date" class="form-control" v-model:value="choosed_item.startDate">
-              </div>
-              <div class="form-group col-sm-6">
-                <label for="edit_phone">联系电话</label>
-                <input type="text" id="edit_phone" class="form-control" v-model:value="choosed_item.phone">
+              <div class="form-group col-sm-12">
+                <label for="edit_id">支行名称</label>
+                <input type="text" id="edit_id" class="form-control" v-model:value="choosed_item.loan.bankName">
               </div>
             </div>
             <div class="row">
               <div class="form-group col-sm-12">
-                <label for="edit_address">地址</label>
-                <input type="text" id="edit_address" class="form-control" v-model:value="choosed_item.address">
+                <label for="edit_name">金额</label>
+                <input type="text" id="edit_name" class="form-control" v-model:value="choosed_item.loan.amount">
+              </div>
+            </div>
+            <div class="row">
+              <div class="form-group col-sm-12">
+                <label for="edit_staff">客户身份证号集合 (格式为：xxx,yyy)</label>
+                <input type="text" id="edit_staff" class="form-control" v-model:value="choosed_item.customers">
               </div>
             </div>
             <div class="row">
               <div class="form-group col-sm-6">
-                <label for="edit_bankname">从属支行名称</label>
-                <input type="text" id="edit_bankname" class="form-control" v-model:value="choosed_item.bankName">
-              </div>
-              <div class="form-group col-sm-6">
                 <label class="col-sm-12" style="visibility: hidden;">占位置</label>
-                <button type="submit" class="btn btn-success" v-on:click="do_insert">增加</button>
-                <button type="submit" class="btn btn-warning" v-on:click="do_update">修改</button>
-                <button type="submit" class="btn btn-danger" v-on:click="do_remove">删除</button>
+                <button type="submit" class="btn btn-success" v-on:click="do_insert">发放贷款</button>
+                <button type="submit" class="btn btn-danger" v-on:click="do_remove">删除贷款</button>
               </div>
-              <div class="clearfix"></div>
             </div>
           </div>
         </div>
-        <div class="clearfix"></div>
+      </row>
+      <row>
+        <div class="panel panel-warning col-sm-12">
+          <div class="panel-heading">
+            <h3 class="panel-title">
+              贷款支付
+            </h3>
+          </div>
+          <div class="panel-body">
+            <div class="row">
+              <div class="form-group col-sm-5">
+                <label for="edit_id">日期</label>
+                <input type="text" id="edit_id" class="form-control" v-model:value="pay_date">
+              </div>
+              <div class="form-group col-sm-5">
+                <label for="edit_id">金额</label>
+                <input type="text" id="edit_id" class="form-control" v-model:value="pay_money">
+              </div>
+              <div class="form-group col-sm-2">
+                <label class="col-sm-12" style="visibility: hidden;">占位置</label>
+                <button type="submit" class="btn btn-warning" v-on:click="do_pay">付款</button>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-12">
+            <table class="table table-bordered">
+              <thead>
+                <tr>
+                  <th>发放号</th>
+                  <th>贷款号</th>
+                  <th>发放日期</th>
+                  <th>发放金额</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="row of choosed_pay">
+                  <td>{{row.payId}}</td>
+                  <td>{{row.loanNumber}}</td>
+                  <td>{{row.date}}</td>
+                  <td>{{row.money}}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
       </row>
       <row>
         <table class="table table-bordered">
           <thead>
             <tr>
-              <th>身份证号</th>
-              <th>姓名</th>
-              <th>开始工作日期 (yyyy-MM-dd)</th>
-              <th>联系电话</th>
-              <th>地址</th>
-              <th>从属支行名称</th>
+              <th>贷款号</th>
+              <th>支行名称</th>
+              <th>总金额</th>
+              <th>客户</th>
+              <th>贷款状态</th>
             </tr>
           </thead>
           <tbody v-on:mouseout="row_over=-1">
             <tr v-for="(row,index) of rows" v-on:mouseover="row_over=index" v-on:click="on_choose(index)" v-bind:class="{danger:index==row_choose,info:index==row_over}">
-              <td>{{row.staffIdCard}}</td>
-              <td>{{row.name}}</td>
-              <td>{{row.startDate}}</td>
-              <td>{{row.phone}}</td>
-              <td>{{row.address}}</td>
-              <td>{{row.bankName}}</td>
+              <td>{{row.loan.loanNumber}}</td>
+              <td>{{row.loan.bankName}}</td>
+              <td>{{row.loan.amount}}</td>
+              <td>{{row.customers}}</td>
+              <td>{{row.states_show}}</td>
             </tr>
           </tbody>
         </table>
@@ -201,7 +222,7 @@
     </div>
     <p id="debug">{{debug}}</p>
   </div>
-  <script src="assets/javascripts/staff.js"></script>
+  <script src="assets/javascripts/loan.js"></script>
 </body>
 
 </html>

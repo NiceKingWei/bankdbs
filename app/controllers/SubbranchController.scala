@@ -18,7 +18,7 @@ class SubbranchController @Inject()(subbranch: SubbranchModel, cc: ControllerCom
 
 
   def index() = Action { implicit request: Request[AnyContent] =>
-    Ok(views.html.subbranch()).withHeaders("default-src" -> "unsafe-inline")
+    Ok(views.html.subbranch())
   }
 
   case class ThisResult(count: Int, rows: Seq[SubbranchRow])

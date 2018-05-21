@@ -29,10 +29,14 @@ POST    /api/customer               controllers.CustomerController.insert
 PUT     /api/customer               controllers.CustomerController.update
 DELETE  /api/customer               controllers.CustomerController.delete
 
-GET     /api/loan                   controllers.LoanController.get(pg:Int,loanNumber: String, bankName: String, customerID: Seq[String], minMoney: Double, maxMoney: Double)
+GET     /loan                       controllers.LoanController.index
+GET     /api/pay                    controllers.LoanController.getPay(loan_number:String)
+GET     /api/loan                   controllers.LoanController.get(pg:Int,loan_number: String, bank_name: String, customer_id: Seq[String], min_money: Double, max_money: Double)
 POST    /api/loan                   controllers.LoanController.insert
 POST    /api/pay                    controllers.LoanController.insertPay
 DELETE  /api/loan                   controllers.LoanController.delete
 
+GET     /stat                       controllers.StatController.index
+GET     /api/stat                   controllers.StatController.get(is_saving:Boolean,period:String,year:String,season:String,month:String)
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

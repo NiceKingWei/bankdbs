@@ -30,23 +30,33 @@ class LoanModel @Inject()(dbConfigProvider: DatabaseConfigProvider)(implicit ec:
   import profile.api._
   import dbConfig._
 
-  def search(loanNumber: String, bankName: String, customerID: Seq[String], minMoney: Double, maxMoney: Double): Future[Seq[LoanRow]] = {
-    val loanNumbers = customerID.foldLeft[Future[Seq[String]]](Future(Seq(loanNumber))) { (acc: Future[Seq[String]], customer) =>
+
+  def extend(future: Future[Seq[LoanRow]]):Future[Seq[ExLoanRow]] = {
+    future.flatMap{ loans =>
+      loans.foldLeft[Future[Seq[ExLoanRow]]](Future(Seq())){(acc,loan)=>
+        for(x<-acc;
+            y<-db.run{LoanPay.filter{_.loanNumber === loan.loanNumber}.map(_.money).sum.result};
+            z<-db.run{CustomerLoan.filter{_.loanNumber === loan.loanNumber}.map(_.idCard).result})
+          yield x.+:(ExLoanRow(z,loan,Some(y.map{t=>if(t>=loan.amount) 2 else 1}.getOrElse(0))))
+      }
+    }
+  }
+
+  def search(loanNumber: String, bankName: String, customerID: Seq[String], minMoney: Double, maxMoney: Double): Future[Seq[ExLoanRow]] = extend {
+    val loanNumbers = customerID.foldLeft[Future[Seq[String]]](Future(if(loanNumber.isEmpty) Seq() else Seq(loanNumber))) { (acc: Future[Seq[String]], customer) =>
       for (x <- acc;
            y <- db.run(CustomerLoan.filter(_.idCard === customer).result))
-        yield x intersect y.map(_.loanNumber)
+        yield if(x.isEmpty) y.map(_.loanNumber) else x intersect y.map(_.loanNumber)
     }
     val result = db.run {
       Loan.filter { item =>
         (item.bankName like ("%" ++ bankName ++ "%")) &&
-          (item.amount >= minMoney && item.amount <= (if (maxMoney == 0) Double.MaxValue else maxMoney))
+          (item.amount >= minMoney && item.amount <= maxMoney)
       }.result
     }
-    for (x <- loanNumbers; y <- result)
-      yield y.filter(item =>
-        x.contains(item.loanNumber) ||
-          (if (loanNumber.nonEmpty) item.loanNumber == loanNumber else false)
-      )
+    for (x <- loanNumbers;
+         y <- result)
+      yield if(x.isEmpty) y else y.filter(item =>x.contains(item.loanNumber))
   }
 
   def getCustomers(loanNumber: String): Future[Seq[CustomerRow]] = db.run {
@@ -55,7 +65,6 @@ class LoanModel @Inject()(dbConfigProvider: DatabaseConfigProvider)(implicit ec:
       yield y).result
   }
 
-  // state:0 -> 1 -> 2
   def getPay(loanNumber: String): Future[(Int, Seq[LoanPayRow])] = {
     db.run {
       LoanPay.filter(_.loanNumber === loanNumber).result
@@ -71,9 +80,11 @@ class LoanModel @Inject()(dbConfigProvider: DatabaseConfigProvider)(implicit ec:
     }
   }
 
-  def insertLoan(loan: LoanRow, customers: Seq[String]): Future[Option[Int]] = db.run {
-    Loan += loan.copy(loanNumber = new java.util.Date().getTime.toString)
-    CustomerLoan ++= customers map (x => CustomerLoanRow(loan.loanNumber, x))
+  def insertLoan(loan0: LoanRow, customers: Seq[String]): Future[Option[Int]] = db.run {
+    val loan = loan0.copy(loanNumber = new java.util.Date().getTime.toString)
+    (Loan += loan).flatMap{_=>
+      CustomerLoan ++= customers map (x => CustomerLoanRow(x,loan.loanNumber))
+    }
   }
 
   def insertPay(pay: LoanPayRow): Future[Int] =
@@ -90,9 +101,11 @@ class LoanModel @Inject()(dbConfigProvider: DatabaseConfigProvider)(implicit ec:
           if(state==1) {
             throw new RuntimeException()
           } else {
-            LoanPay.filter(_.loanNumber===loanNumber).delete
-            CustomerLoan.filter(_.loanNumber===loanNumber).delete
-            Loan.filter(_.loanNumber===loanNumber).delete
+            LoanPay.filter(_.loanNumber===loanNumber).delete.flatMap{_=>
+              CustomerLoan.filter(_.loanNumber===loanNumber).delete.flatMap{_=>
+                Loan.filter(_.loanNumber===loanNumber).delete
+              }
+            }
           }
         }
     ) yield result

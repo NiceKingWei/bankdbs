@@ -2,7 +2,7 @@ package models
 
 import java.sql.Date
 
-import dao.{DBTables, HasAccountRow, SavingAccountRow}
+import dao.{DBTables, HasAccountRow}
 import javax.inject.{Inject, Singleton}
 import play.api.db.slick.DatabaseConfigProvider
 import play.api.libs.json.{Json, Reads, Writes}
@@ -75,7 +75,7 @@ class AccountModel @Inject()(dbConfigProvider: DatabaseConfigProvider)(implicit 
       }.result
     }
 
-    lazy val account_result = if (account_type == 0) {
+    if (account_type == 0) {
       for (x <- saving_result) yield x.map { item => BaseAccountRow.make(item._1, item._2.idCard) }
     } else if (account_type == 1) {
       for (y <- checking_result) yield y.map { item => BaseAccountRow.make(item._1, item._2.idCard) }
@@ -85,7 +85,7 @@ class AccountModel @Inject()(dbConfigProvider: DatabaseConfigProvider)(implicit 
         yield x.map { item => BaseAccountRow.make(item._1, item._2.idCard) } ++ y.map { item => BaseAccountRow.make(item._1, item._2.idCard) }
     }
   }
-  
+
   def insert(row0: BaseAccountRow): Future[Int] = {
     val row = row0.copy(accountId = new java.util.Date().getTime.toString)
     db.run {
@@ -132,10 +132,13 @@ class AccountModel @Inject()(dbConfigProvider: DatabaseConfigProvider)(implicit 
   }
 
   def delete(account_id: String): Future[Int] = db.run {
-    CheckingAccount.filter(_.accountId === account_id).delete
-    SavingAccount.filter(_.accountId === account_id).delete
-    HasAccount.filter(_.accountId === account_id).delete
-    Account.filter(_.accountId === account_id).delete
+    CheckingAccount.filter(_.accountId === account_id).delete.flatMap { _ =>
+      SavingAccount.filter(_.accountId === account_id).delete.flatMap { _ =>
+        HasAccount.filter(_.accountId === account_id).delete.flatMap { _ =>
+          Account.filter(_.accountId === account_id).delete
+        }
+      }
+    }
   }
 
 }

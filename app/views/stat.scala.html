@@ -1,0 +1,147 @@
+@()
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Statistics</title>
+
+  <link href="assets/stylesheets/bootstrap.min.css" rel="stylesheet">
+  <script src="assets/javascripts/jquery.min.js"></script>
+  <script src="assets/javascripts/bootstrap.min.js"></script>
+  <script src="assets/javascripts/vue.js"></script>
+</head>
+
+<body>
+  <nav class="navbar navbar-default">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1"
+          aria-expanded="false">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="/">银行管理系统</a>
+      </div>
+      <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+        <ul class="nav navbar-nav">
+          <li>
+            <a href="subbranch">支行</a>
+          </li>
+          <li>
+            <a href="staff">员工</a>
+          </li>
+          <li>
+            <a href="customer">客户</a>
+          </li>
+          <li>
+            <a href="account">账户</a>
+          </li>
+          <li>
+            <a href="loan">贷款</a>
+          </li>
+          <li class="active">
+            <a href="stat">统计</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  <div class="container" id="app">
+    <div class="col-sm-2"></div>
+    <div class="container col-sm-12">
+      <row>
+        <div class="panel panel-info col-sm-12">
+          <div class="panel-heading">
+            <h3 class="panel-title">
+              统计
+            </h3>
+          </div>
+          <div class="panel-body">
+            <div class="row">
+              <div class="form-group col-sm-2">
+                <label for="business_type">业务分类</label>
+                <select v-model="business_type" id="business_type" class="col-sm-12 form-control">
+                  <option>储蓄</option>
+                  <option>贷款</option>
+                </select>
+              </div>
+              <div class="form-group col-sm-2">
+                <label for="business_period">时间跨度</label>
+                <select v-model="business_period" id="business_period" class="col-sm-12 form-control">
+                  <option>按月</option>
+                  <option>按季度</option>
+                  <option>按年</option>
+                </select>
+              </div>
+              <div class="form-group col-sm-2">
+                <label for="edit_3">年</label>
+                <select v-model="business_year" id="business_period" class="col-sm-12 form-control">
+                  <option v-for="i in years">
+                    {{i}}
+                  </option>
+                </select>
+              </div>
+              <div class="form-group col-sm-2">
+                <label for="edit_1">季度</label>
+                <select v-model="business_season" id="business_period" class="col-sm-12 form-control">
+                  <option>春</option>
+                  <option>夏</option>
+                  <option>秋</option>
+                  <option>冬</option>
+                </select>
+              </div>
+              <div class="form-group col-sm-2">
+                <label for="edit_1">月</label>
+                <select v-model="business_month" id="business_period" class="col-sm-12 form-control">
+                  <option>1</option>
+                  <option>2</option>
+                  <option>3</option>
+                  <option>4</option>
+                  <option>5</option>
+                  <option>6</option>
+                  <option>7</option>
+                  <option>8</option>
+                  <option>9</option>
+                  <option>10</option>
+                  <option>11</option>
+                  <option>12</option>
+                </select>
+              </div>
+              <div class="form-group col-sm-2">
+                <label class="col-sm-12" style="visibility: hidden;">占位置</label>
+                <button type="submit" class="btn btn-primary" v-on:click="do_stat">统计</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </row>
+      <row>
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <td>支行名称</td>
+              <td>业务总金额</td>
+              <td>开户用户数</td>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="row in rows">
+              <td>{{row.bankName}}</td>
+              <td>{{row.amount}}</td>
+              <td>{{row.customers}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </row>
+    </div>
+  </div>
+  <script src="assets/javascripts/stat.js"></script>
+</body>
+
+</html>

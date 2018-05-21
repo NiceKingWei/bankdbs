@@ -16,81 +16,117 @@
 </head>
 
 <body>
+  <nav class="navbar navbar-default">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1"
+          aria-expanded="false">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="/">银行管理系统</a>
+      </div>
+      <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+        <ul class="nav navbar-nav">
+          <li class="active">
+            <a href="subbranch">支行</a>
+          </li>
+          <li>
+            <a href="staff">员工</a>
+          </li>
+          <li>
+            <a href="customer">客户</a>
+          </li>
+          <li>
+            <a href="account">账户</a>
+          </li>
+          <li>
+            <a href="loan">贷款</a>
+          </li>
+          <li>
+            <a href="stat">统计</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
   <div class="container" id="app">
     <div class="col-sm-2"></div>
     <div class="container col-sm-12">
       <row>
-          <div class="panel panel-info col-sm-6">
-            <div class="panel-heading">
-              <h3 class="panel-title">
-                <a data-toggle="" data-parent="#accordion" href="#search_body">搜索</a>
-              </h3>
-            </div>
-            <div id="search_body">
-              <div class="panel-body">
-                <div class="row">
-                  <div class="form-group col-sm-6">
-                    <label for="search_name">支行名称</label>
-                    <input type="text" id="search_name" class="form-control" v-model:value="search_name">
-                  </div>
-                  <div class="form-group col-sm-6">
-                    <label for="search_city">城市</label>
-                    <input type="text" id="search_city" class="form-control" v-model:value="search_city">
-                  </div>
+        <div class="panel panel-info col-sm-6">
+          <div class="panel-heading">
+            <h3 class="panel-title">
+              <a data-toggle="" data-parent="#accordion" href="#search_body">搜索</a>
+            </h3>
+          </div>
+          <div id="search_body">
+            <div class="panel-body">
+              <div class="row">
+                <div class="form-group col-sm-6">
+                  <label for="search_name">支行名称</label>
+                  <input type="text" id="search_name" class="form-control" v-model:value="search_name">
                 </div>
-                <div class="row">
-                  <div class="form-group col-sm-6">
-                    <label for="search_min">资产最小值</label>
-                    <input type="text" class="form-control" id="search_min" v-model:value="search_min" placeholder="0.00">
-                  </div>
+                <div class="form-group col-sm-6">
+                  <label for="search_city">城市</label>
+                  <input type="text" id="search_city" class="form-control" v-model:value="search_city">
+                </div>
+              </div>
+              <div class="row">
+                <div class="form-group col-sm-6">
+                  <label for="search_min">资产最小值</label>
+                  <input type="text" class="form-control" id="search_min" v-model:value="search_min" placeholder="0.00">
+                </div>
 
-                  <div class="form-group col-sm-6">
-                    <label for="search_min">资产最大值</label>
-                    <input type="text" class="form-control" id="search_max" v-model:value="search_max" placeholder="inf">
-                  </div>
+                <div class="form-group col-sm-6">
+                  <label for="search_min">资产最大值</label>
+                  <input type="text" class="form-control" id="search_max" v-model:value="search_max" placeholder="inf">
                 </div>
-                <div class="row">
-                  <div class="form-group col-sm-6">
-                    <button type="submit" class="btn btn-info" v-on:click="do_search">搜索</button>
-                  </div>
+              </div>
+              <div class="row">
+                <div class="form-group col-sm-6">
+                  <button type="submit" class="btn btn-info" v-on:click="do_search">搜索</button>
                 </div>
               </div>
             </div>
           </div>
-          <div class="panel panel-success col-sm-6">
-            <div class="panel-heading">
-              <h3 class="panel-title">
-                <a data-toggle="" data-parent="#accordion" href="#edit_body">编辑</a>
-              </h3>
-            </div>
-            <div id="edit_body">
-              <div class="panel-body">
-                <div class="row">
-                  <div class="form-group col-sm-6">
-                    <label for="edit_name">支行名称</label>
-                    <input type="text" class="form-control" id="edit_name" v-model:value="choosed_item.bankName">
-                  </div>
-                  <div class="form-group col-sm-6">
-                    <label for="edit_city">城市</label>
-                    <input type="text" class="form-control" id="edit_city" v-model:value="choosed_item.city">
-                  </div>
+        </div>
+        <div class="panel panel-success col-sm-6">
+          <div class="panel-heading">
+            <h3 class="panel-title">
+              <a data-toggle="" data-parent="#accordion" href="#edit_body">编辑</a>
+            </h3>
+          </div>
+          <div id="edit_body">
+            <div class="panel-body">
+              <div class="row">
+                <div class="form-group col-sm-6">
+                  <label for="edit_name">支行名称</label>
+                  <input type="text" class="form-control" id="edit_name" v-model:value="choosed_item.bankName">
                 </div>
-                <div class="row">
-                  <div class="form-group col-sm-6">
-                    <label for="edit_money">资产</label>
-                    <input type="money" class="form-control" id="edit_money"  v-model:value="choosed_item.money">
-                  </div>
+                <div class="form-group col-sm-6">
+                  <label for="edit_city">城市</label>
+                  <input type="text" class="form-control" id="edit_city" v-model:value="choosed_item.city">
                 </div>
-                <div class="row">
-                  <div class="form-group col-sm-6">
-                    <button type="submit" class="btn btn-success" v-on:click="do_insert">增加</button>
-                    <button type="submit" class="btn btn-warning" v-on:click="do_update">修改</button>
-                    <button type="submit" class="btn btn-danger" v-on:click="do_remove">删除</button>
-                  </div>
+              </div>
+              <div class="row">
+                <div class="form-group col-sm-6">
+                  <label for="edit_money">资产</label>
+                  <input type="money" class="form-control" id="edit_money" v-model:value="choosed_item.money">
+                </div>
+              </div>
+              <div class="row">
+                <div class="form-group col-sm-6">
+                  <button type="submit" class="btn btn-success" v-on:click="do_insert">增加</button>
+                  <button type="submit" class="btn btn-warning" v-on:click="do_update">修改</button>
+                  <button type="submit" class="btn btn-danger" v-on:click="do_remove">删除</button>
                 </div>
               </div>
             </div>
           </div>
+        </div>
         <div class="clearfix"></div>
       </row>
       <row>
