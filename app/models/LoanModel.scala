@@ -43,11 +43,12 @@ class LoanModel @Inject()(dbConfigProvider: DatabaseConfigProvider)(implicit ec:
   }
 
   def search(loanNumber: String, bankName: String, customerID: Seq[String], minMoney: Double, maxMoney: Double): Future[Seq[ExLoanRow]] = extend {
-    val loanNumbers = customerID.foldLeft[Future[Seq[String]]](Future(if(loanNumber.isEmpty) Seq() else Seq(loanNumber))) { (acc: Future[Seq[String]], customer) =>
+    val loanNumbers = customerID.foldLeft[Future[(Boolean,Seq[String])]](Future(if(loanNumber.isEmpty) (true,Seq()) else (false,Seq(loanNumber)) )) { (acc, customer) =>
       for (x <- acc;
            y <- db.run(CustomerLoan.filter(_.idCard === customer).result))
-        yield if(x.isEmpty) y.map(_.loanNumber) else x intersect y.map(_.loanNumber)
+        yield if(x._1) (false,y.map(_.loanNumber)) else (false,x._2 intersect y.map(_.loanNumber))
     }
+
     val result = db.run {
       Loan.filter { item =>
         (item.bankName like ("%" ++ bankName ++ "%")) &&
@@ -56,7 +57,7 @@ class LoanModel @Inject()(dbConfigProvider: DatabaseConfigProvider)(implicit ec:
     }
     for (x <- loanNumbers;
          y <- result)
-      yield if(x.isEmpty) y else y.filter(item =>x.contains(item.loanNumber))
+      yield if(x._1) y else y.filter(item =>x._2.contains(item.loanNumber))
   }
 
   def getCustomers(loanNumber: String): Future[Seq[CustomerRow]] = db.run {

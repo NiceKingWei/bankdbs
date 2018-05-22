@@ -6,6 +6,7 @@ import dao.{CustomerRow, DBTables}
 import javax.inject.{Inject, Singleton}
 import play.api.db.slick.DatabaseConfigProvider
 import slick.jdbc.JdbcProfile
+import myutils.MyUtils._
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -47,7 +48,7 @@ class CustomerModel @Inject()(dbConfigProvider: DatabaseConfigProvider)(implicit
 
 
   def insert(row:CustomerRow):Future[Int] = db.run {
-    Customer += row
+    Customer += row.copy(staffIdCard = someNull(row.staffIdCard),role = someNull(row.role))
   }
 
   def update(old_row:CustomerRow,new_row:CustomerRow):Future[Int] = db.run {

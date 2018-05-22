@@ -56,6 +56,7 @@ var app = new Vue({
         'data': JSON.stringify(data),
         'success': function (response) {
           _self.on_choose(_self.row_choose);
+          _self.change_page(0);
         }
       });
     },
@@ -108,7 +109,7 @@ var app = new Vue({
       this.row_choose = index;
       if (this.rows[index]) {
         this.choosed_item = $.extend(true, {}, this.rows[index]);
-        this.choosed_item.pay = [];
+        this.choosed_pay = [];
         var req = {
           loan_number: this.choosed_item.loan.loanNumber
         };
@@ -122,7 +123,7 @@ var app = new Vue({
           }
         });
       } else {
-        this.choosed_item.pay = [];
+        this.choosed_pay = [];
       }
     },
     refresh: function () {

@@ -109,13 +109,18 @@ var app = new Vue({
       var _self = this;
       this.row_choose = index;
       this.choosed_item = $.extend(true, {}, this.rows[index]);
+      if(this.choosed_item.isSaving){
+        this.edit_selected = "储蓄账户";
+      }else{
+        this.edit_selected = "支票账户";
+      }
     },
     refresh: function () {
       this.search_bank_name = "";
       this.search_contact_name = "";
       this.search_id = "";
       this.search_customer_id = "",
-        this.search_date_from = "";
+      this.search_date_from = "";
       this.search_date_to = "";
       this.search_staff_id = "";
       this.search_min = 0;
@@ -161,7 +166,6 @@ var app = new Vue({
     do_update: function () {
       var _self = this;
       this.choosed_item.money = parseFloat(this.choosed_item.money);
-      this.choosed_item.isSaving = this.edit_selected == "储蓄账户";
       this.choosed_item.accountId = this.rows[this.row_choose].accountId;
       if (!this.choosed_item.currency) this.choosed_item.currency = "";
       this.choosed_item.rate_creditLine = parseFloat(this.choosed_item.rate_creditLine);

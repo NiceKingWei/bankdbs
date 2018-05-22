@@ -28,6 +28,7 @@ object MyUtils{
     JsString(ft.format(new java.util.Date(o.getTime)))
   }
 
+  def someNull(x:Option[String]): Option[String] = x.flatMap(y=>if (y.isEmpty) None else Some(y))
 //  implicit val date_reads: Reads[Date] = (js: JsValue) => {
 //    val ft = new SimpleDateFormat("yyyy-mm-dd")
 //    JsString(ft.format(new java.util.Date(o.getTime)))
