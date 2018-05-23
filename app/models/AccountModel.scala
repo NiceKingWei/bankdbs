@@ -123,10 +123,12 @@ class AccountModel @Inject()(dbConfigProvider: DatabaseConfigProvider)(implicit 
     if (old_row.isSaving != new_row.isSaving || old_row.accountId != new_row.accountId) {
       throw new MatchError("")
     } else {
-      Account.filter(_.accountId===old_row.accountId).update(new_row.toAccount).flatMap{_=>
-        if (old_row.isSaving) {
+      if (old_row.isSaving) {
+        Account.filter(_.accountId === old_row.accountId).update(new_row.toAccount).flatMap { _ =>
           SavingAccount.filter(_.accountId === old_row.accountId).update(new_row.toSaving)
-        } else {
+        }
+      } else {
+        Account.filter(_.accountId === old_row.accountId).update(new_row.toAccount).flatMap { _ =>
           CheckingAccount.filter(_.accountId === old_row.accountId).update(new_row.toChecking)
         }
       }
@@ -134,12 +136,15 @@ class AccountModel @Inject()(dbConfigProvider: DatabaseConfigProvider)(implicit 
   }
 
   def delete(account_id: String): Future[Int] = db.run {
-    CheckingAccount.filter(_.accountId === account_id).delete.flatMap { _ =>
-      SavingAccount.filter(_.accountId === account_id).delete.flatMap { _ =>
-        HasAccount.filter(_.accountId === account_id).delete.flatMap { _ =>
-          Account.filter(_.accountId === account_id).delete
+    CheckingAccount.filter(_.accountId === account_id).delete.flatMap {
+      _ =>
+        SavingAccount.filter(_.accountId === account_id).delete.flatMap {
+          _ =>
+            HasAccount.filter(_.accountId === account_id).delete.flatMap {
+              _ =>
+                Account.filter(_.accountId === account_id).delete
+            }
         }
-      }
     }
   }
 
