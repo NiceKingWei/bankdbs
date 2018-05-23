@@ -1,0 +1,40 @@
+graph G {
+    node[shape="box"];
+    backend[label="scala play framework 后端"];
+    db[label="mysql 5.0 DBMS",style=filled,color=darksalmon];
+
+
+    subgraph cluster1{
+        label = "前端的每个页面，对应后端一组 Model，Controller 和 View";
+        node[style=filled,color=white];
+        style=filled;
+        color=lightgray;
+        frontend[label="web 前端"];
+        frontend -- 客户管理;
+        frontend -- 账户管理;
+        frontend -- 贷款管理
+        frontend -- 支行管理
+        frontend -- 职工管理
+        frontend -- 统计
+    }
+    
+
+    subgraph cluster0{
+        style=filled;
+        color=khaki;
+        
+        backend -- models -- dao;
+        backend -- controller;
+        backend -- views;
+        backend -- myutils;
+ 
+        dao[label="dao层\n和数据库进行交互\n给 model 提供抽象的访问接口"];
+        models[label="model\n和dao层进行交互\n完成各个模块的业务逻辑\n给 controller 提供接口"]
+        controller[label="controller\n处理路由\n接收前端的数据\n调用 models，返回数据"];
+        views[label="views\n在前端显示数据"]
+        myutils[label="myutils\n工具函数和工具类"]
+    }
+
+    frontend -- backend;
+    dao -- db;
+}

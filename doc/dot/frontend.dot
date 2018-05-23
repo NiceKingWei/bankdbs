@@ -1,0 +1,12 @@
+digraph{
+    node[shape="box"]
+    input[label="用户输入",shape="parallelogram"]
+    input->vue
+    vue[label="Vue.js\n数据绑定\n事件处理"]
+    vue->ajax
+    ajax[label="ajax 发送异步请求"]
+    ajax->callback
+    callback[label="callback\n服务器返回结果\n执行回调函数"]
+    callback->succ[label="  操作成功"]
+    succ[label="显示新数据或错误信息\n数据通常显示在表格中\n错误信息有两种\n请求错误或数据错误\n请求错误：数据格式不正确\n数据错误：违反数据完整性约束"]
+}

@@ -1,0 +1,15 @@
+digraph{
+    splines=false
+    node[shape="box"]
+    a[label="前端页面"]
+    b[label="play framework"]
+    a->b[label="    向后端发送请求（增、删、改、查）"]
+    b->c[label="根据 route 的定义对请求进行转发"]
+    c[label="controller 模块\n对请求进行校验和理解\n返回查询结果并序列化为 Json"]
+    c->d[label="    调用"]
+    d[label="model 模块\n对 entity 和 relation 进行建模"]
+    d->e[label="    调用"]
+    e[label="dao 层\n在语言层面对数据库模式进行描述\n数据结构与数据库模式一一对应"]
+    e->f[label="    连接"]
+    f[label="Mysql 5.0"]
+}

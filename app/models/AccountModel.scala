@@ -123,10 +123,12 @@ class AccountModel @Inject()(dbConfigProvider: DatabaseConfigProvider)(implicit 
     if (old_row.isSaving != new_row.isSaving || old_row.accountId != new_row.accountId) {
       throw new MatchError("")
     } else {
-      if (old_row.isSaving) {
-        SavingAccount.filter(_.accountId === old_row.accountId).update(new_row.toSaving)
-      } else {
-        CheckingAccount.filter(_.accountId === old_row.accountId).update(new_row.toChecking)
+      Account.filter(_.accountId===old_row.accountId).update(new_row.toAccount).flatMap{_=>
+        if (old_row.isSaving) {
+          SavingAccount.filter(_.accountId === old_row.accountId).update(new_row.toSaving)
+        } else {
+          CheckingAccount.filter(_.accountId === old_row.accountId).update(new_row.toChecking)
+        }
       }
     }
   }

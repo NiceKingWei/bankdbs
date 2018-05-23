@@ -1,0 +1,217 @@
+<html>
+
+<body>
+    账户表 Account
+    <table border="1" style="border-collapse:collapse">
+        <tr>
+            <th>account_id</th>
+            <th>bank_name</th>
+            <th>money</th>
+            <th>date</th>
+        </tr>
+        <tr>
+            <td>1526973164194</td>
+            <td>bank1</td>
+            <td>1000</td>
+            <td>2018-05-20</td>
+        </tr>
+        <tr>
+            <td>1526973174923</td>
+            <td>bank1</td>
+            <td>1000</td>
+            <td>2018-05-20</td>
+        </tr>
+    </table>
+    支票账户表 CheckingAccount
+    <table border="1" style="border-collapse:collapse">
+        <tr>
+            <th>account_id</th>
+            <th>bank_name</th>
+            <th>money</th>
+            <th>date</th>
+            <th>credit_line</th>
+        </tr>
+        <tr>
+            <td>1526973164194</td>
+            <td>bank1</td>
+            <td>1000</td>
+            <td>2018-05-20</td>
+            <td>1000</td>
+        </tr>
+    </table>
+    客户表 Customer
+    <table border="1" style="border-collapse:collapse">
+        <tr>
+            <th>id_card</th>
+            <th>staff_id_card</th>
+            <th>name</th>
+            <th>phone</th>
+            <th>address</th>
+            <th>contact_name</th>
+            <th>contact_phone</th>
+            <th>contact_email</th>
+            <th>contact_role</th>
+            <th>role</th>
+        </tr>
+        <tr>
+            <td>03</td>
+            <td>NULL</td>
+            <td>c1</td>
+            <td>55</td>
+            <td>r</td>
+            <td>cc1</td>
+            <td>133</td>
+            <td>xx@yy.com</td>
+            <td>f</td>
+            <td>NULL</td>
+        </tr>
+        <tr>
+            <td>04</td>
+            <td>01</td>
+            <td>c2</td>
+            <td>55</td>
+            <td>r</td>
+            <td>cc1</td>
+            <td>133</td>
+            <td>xx@yy.com</td>
+            <td>f</td>
+            <td>贷款负责人</td>
+        </tr>
+    </table>
+    用户贷款表 CustomerLoan
+    <table border="1" style="border-collapse:collapse">
+        <tr>
+            <th>id_card</th>
+            <th>loan_number</th>
+        </tr>
+        <tr>
+            <td>03</td>
+            <td>1526973201470</td>
+        </tr>
+        <tr>
+            <td>04</td>
+            <td>1526973201470</td>
+        </tr>
+    </table>
+    用户拥有账户表 HasAccount
+    <table border="1" style="border-collapse:collapse">
+        <tr>
+            <th>account_id</th>
+            <th>id_card</th>
+            <th>latest_date</th>
+            <th>is_saving</th>
+        </tr>
+        <tr>
+            <td>1526973164194</td>
+            <td>03</td>
+            <td>2018-05-22</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>1526973174923</td>
+            <td>03</td>
+            <td>2018-05-22</td>
+            <td>1</td>
+        </tr>
+    </table>
+    贷款表 Loan
+    <table border="1" style="border-collapse:collapse">
+        <tr>
+            <th>loan_number</th>
+            <th>bank_name</th>
+            <th>amount</th>
+        </tr>
+        <tr>
+            <td>1526973201470</td>
+            <td>bank2</td>
+            <td>300</td>
+        </tr>
+    </table>
+    贷款发放表 LoanPay
+    <table border="1" style="border-collapse:collapse">
+        <tr>
+            <th>pay_id</th>
+            <th>loan_number</th>
+            <th>date</th>
+            <th>money</th>
+        </tr>
+        <tr>
+            <td>1526973213057</td>
+            <td>1526973201470</td>
+            <td>2018-05-21</td>
+            <td>150</td>
+        </tr>
+        <tr>
+            <td>1526973218708</td>
+            <td>1526973201470</td>
+            <td>2018-05-22</td>
+            <td>150</td>
+        </tr>
+    </table>
+    储蓄账户表 SavingAccount
+    <table border="1" style="border-collapse:collapse">
+        <tr>
+            <th>account_id</th>
+            <th>bank_name</th>
+            <th>money</th>
+            <th>date</th>
+            <th>rate</th>
+            <th>currency</th>
+        </tr>
+        <tr>
+            <td>1526973174923</td>
+            <td>bank1</td>
+            <td>1000</td>
+            <td>2018-05-20</td>
+            <td>0.01</td>
+            <td>RMB</td>
+        </tr>
+    </table>
+    员工表 Staff
+    <table border="1" style="border-collapse:collapse">
+        <tr>
+            <th>staff_id_card</th>
+            <th>bank_name</th>
+            <th>name</th>
+            <th>phone</th>
+            <th>address</th>
+            <th>start_date</th>
+        </tr>
+        <tr>
+            <td>01</td>
+            <td>bank1</td>
+            <td>n1</td>
+            <td>133555</td>
+            <td>x</td>
+            <td>2018-01-01</td>
+        </tr>
+        <tr>
+            <td>02</td>
+            <td>bank1</td>
+            <td>n2</td>
+            <td>155</td>
+            <td>x</td>
+            <td>2018-01-01</td>
+        </tr>
+    </table>
+    支行表 Subbranch
+    <table border="1" style="border-collapse:collapse">
+        <tr>
+            <th>bank_name</th>
+            <th>city</th>
+            <th>money</th>
+        </tr>
+        <tr>
+            <td>bank1</td>
+            <td>c1</td>
+            <td>30000</td>
+        </tr>
+        <tr>
+            <td>bank2</td>
+            <td>c2</td>
+            <td>20000</td>
+        </tr>
+    </table>
+</body>
+
+</html>

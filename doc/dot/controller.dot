@@ -1,0 +1,12 @@
+digraph{
+    node[shape="box"]
+    input[label="前端请求",shape="parallelogram"]
+    input->controller
+    controller[label="对请求进行验证\n对数据进行反序列化和校验\n生成结构化的有效查询数据"]
+    controller->model[label="   调用 model 模块"]
+    model->ret
+    model[label="model 模块进行数据增、删、改、查"]
+    ret[label="对返回结果进行序列化\n把序列化后的结果交给\nplay framework"]
+    ret->play
+    play[label="和前端进行通信\n将结果发送给前端"]
+}

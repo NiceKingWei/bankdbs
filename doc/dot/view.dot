@@ -1,0 +1,8 @@
+digraph{
+    node[shape="box"]
+    input[label="HTML 模板\n待渲染的数据",shape="parallelogram"]
+    input->gen
+    gen[label="渲染引擎对模板进行渲染\n"]
+    gen->out
+    out[label="返回渲染好的结果给 controller"]
+}
